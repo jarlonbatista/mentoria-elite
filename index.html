@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elite Mentor | Sistema de Gestão</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root { --primary: #4f46e5; --secondary: #10b981; --dark: #0f172a; --bg: #f1f5f9; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; overflow-x: hidden; }
+
+        /* Tela de Login */
+        #login-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--dark); display: flex; align-items: center; justify-content: center; z-index: 1000;
+        }
+        .login-box {
+            background: white; padding: 40px; border-radius: 16px; width: 100%; max-width: 350px; text-align: center;
+        }
+        .login-box h2 { color: var(--dark); margin-bottom: 20px; }
+        
+        /* Dashboard (Escondido Inicialmente) */
+        #dashboard { display: none; }
+
+        .sidebar { width: 280px; background: #1e293b; color: white; height: 100vh; position: fixed; padding: 30px 20px; }
+        .main-content { margin-left: 280px; padding: 40px; width: calc(100% - 280px); }
+
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-top: 5px; }
+        
+        button { cursor: pointer; border: none; transition: 0.3s; }
+        .btn-primary { background: var(--primary); color: white; padding: 12px; border-radius: 8px; font-weight: bold; width: 100%; }
+        .btn-pdf { background: #ea580c; color: white; padding: 12px; border-radius: 8px; width: 100%; margin-top: 10px; font-weight: bold; }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 25px; }
+        .stat-card { background: white; padding: 20px; border-radius: 12px; text-align: center; border-bottom: 4px solid var(--primary); }
+    </style>
+</head>
+<body>
+
+<div id="login-screen">
+    <div class="login-box">
+        <i class="fas fa-user-shield fa-3x" style="color: var(--primary); margin-bottom: 15px;"></i>
+        <h2>Acesso Mentoria</h2>
+        <div class="input-group">
+            <input type="password" id="pass" placeholder="Digite sua senha de mentor">
+        </div>
+        <button class="btn-primary" onclick="checkLogin()">ENTRAR NO PAINEL</button>
+        <p id="login-error" style="color: red; font-size: 0.8rem; margin-top: 10px; display: none;">Senha incorreta!</p>
+    </div>
+</div>
+
+<div id="dashboard">
+    <div class="sidebar">
+        <h2 style="color:var(--secondary)"><i class="fas fa-rocket"></i> Elite Mentor</h2>
+        <p>Bem-vindo, Administrador</p>
+        <hr style="opacity: 0.1">
+        <button class="btn-pdf" onclick="gerarPDF()">
+            <i class="fas fa-file-pdf"></i> GERAR RELATÓRIO PDF
+        </button>
+        <button onclick="logout()" style="background:none; color:#94a3b8; margin-top: 20px; width: 100%; text-align: left;">
+            <i class="fas fa-sign-out-alt"></i> Sair do Sistema
+        </button>
+    </div>
+
+    <div class="main-content" id="print-area">
+        <h1>Dashboard do Aluno</h1>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <small>MÉDIA GERAL</small>
+                <div id="media-val" style="font-size: 1.5rem; font-weight: bold;">0%</div>
+            </div>
+            <div class="stat-card">
+                <small>TOTAL QUESTÕES</small>
+                <div id="total-val" style="font-size: 1.5rem; font-weight: bold;">0</div>
+            </div>
+            <div class="stat-card">
+                <small>TÓPICOS ESTUDADOS</small>
+                <div id="topicos-val" style="font-size: 1.5rem; font-weight: bold;">0</div>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="card" id="form-card">
+                <h3>Lançar Atividade</h3>
+                <div class="input-group">
+                    <label>Disciplina</label>
+                    <select id="disc">
+                        <option>Português</option>
+                        <option>Direito Constitucional</option>
+                        <option>Direito Administrativo</option>
+                        <option>Raciocínio Lógico</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Tópico</label>
+                    <input type="text" id="top" placeholder="Ex: Crase">
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <input type="number" id="acert" placeholder="Acertos">
+                    <input type="number" id="err" placeholder="Erros">
+                </div>
+                <button class="btn-primary" style="margin-top: 15px;" onclick="addEstudo()">SALVAR DADOS</button>
+            </div>
+
+            <div class="card">
+                <h3>Análise por Disciplina</h3>
+                <canvas id="meuRadar"></canvas>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>📝 Observações do Mentor</h3>
+            <textarea id="obs-mentor" rows="4" placeholder="Escreva aqui o feedback estratégico para o seu aluno..."></textarea>
+        </div>
+    </div>
+</div>
+
+<script>
+    const SENHA_MESTRA = "1234"; // VOCÊ PODE ALTERAR SUA SENHA AQUI
+    let dados = JSON.parse(localStorage.getItem('dadosMentoria')) || [];
+    let radar;
+
+    function checkLogin() {
+        const pass = document.getElementById('pass').value;
+        if(pass === SENHA_MESTRA) {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            render();
+        } else {
+            document.getElementById('login-error').style.display = 'block';
+        }
+    }
+
+    function addEstudo() {
+        const d = {
+            materia: document.getElementById('disc').value,
+            topico: document.getElementById('top').value,
+            acertos: parseInt(document.getElementById('acert').value) || 0,
+            erros: parseInt(document.getElementById('err').value) || 0
+        };
+        if(!d.topico) return alert("Preencha o tópico");
+        dados.push(d);
+        localStorage.setItem('dadosMentoria', JSON.stringify(dados));
+        render();
+    }
+
+    function render() {
+        const totalA = dados.reduce((a, b) => a + b.acertos, 0);
+        const totalE = dados.reduce((a, b) => a + b.erros, 0);
+        const media = totalA + totalE > 0 ? ((totalA / (totalA + totalE)) * 100).toFixed(1) : 0;
+
+        document.getElementById('media-val').innerText = media + "%";
+        document.getElementById('total-val').innerText = totalA + totalE;
+        document.getElementById('topicos-val').innerText = dados.length;
+
+        renderChart();
+    }
+
+    function renderChart() {
+        const agrupar = {};
+        dados.forEach(i => {
+            if(!agrupar[i.materia]) agrupar[i.materia] = { a: 0, t: 0 };
+            agrupar[i.materia].a += i.acertos;
+            agrupar[i.materia].t += (i.acertos + i.erros);
+        });
+        const labels = Object.keys(agrupar);
+        const values = labels.map(l => (agrupar[l].a / agrupar[l].t * 100).toFixed(1));
+
+        if(radar) radar.destroy();
+        radar = new Chart(document.getElementById('meuRadar'), {
+            type: 'radar',
+            data: {
+                labels: labels,
+                datasets: [{ label: 'Desempenho %', data: values, backgroundColor: 'rgba(79, 70, 229, 0.2)', borderColor: '#4f46e5' }]
+            }
+        });
+    }
+
+    async function gerarPDF() {
+        const { jsPDF } = window.jspdf;
+        document.getElementById('form-card').style.display = 'none';
+        
+        const canvas = await html2canvas(document.getElementById('print-area'));
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 210, (canvas.height * 210) / canvas.width);
+        pdf.save("relatorio-mentoria.pdf");
+        
+        document.getElementById('form-card').style.display = 'block';
+    }
+
+    function logout() { location.reload(); }
+</script>
+</body>
+</html>
