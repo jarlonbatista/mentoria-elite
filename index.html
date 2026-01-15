@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elite Mentor | Gestão de Performance</title>
+    <title>Elite Mentor | Dashboard Estratégico</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -15,11 +17,12 @@
 
         /* Login */
         #login-screen { position: fixed; inset: 0; background: var(--dark); display: flex; align-items: center; justify-content: center; z-index: 3000; }
-        .login-box { background: white; padding: 40px; border-radius: 24px; width: 380px; text-align: center; }
+        .login-box { background: white; padding: 40px; border-radius: 24px; width: 380px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
 
         /* Sidebar */
         .sidebar { width: 280px; background: var(--sidebar); color: white; height: 100vh; position: fixed; padding: 25px; display: flex; flex-direction: column; z-index: 1000; }
-        .user-photo { width: 80px; height: 80px; border-radius: 20px; background: #334155; margin: 0 auto 15px; border: 3px solid var(--primary); object-fit: cover; }
+        .badge-mentor { background: var(--accent); color: white; font-size: 0.65rem; padding: 4px 10px; border-radius: 10px; margin-top: 5px; display: inline-block; font-weight: 800; }
+        
         .nav-link { display: flex; align-items: center; gap: 15px; padding: 12px 18px; border-radius: 12px; color: #94a3b8; text-decoration: none; cursor: pointer; margin-bottom: 5px; font-weight: 600; }
         .nav-link.active { background: var(--primary); color: white; }
 
@@ -29,74 +32,88 @@
         .page.active { display: block; animation: fadeIn 0.4s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .card { background: white; padding: 25px; border-radius: 20px; border: 1px solid #e2e8f0; margin-bottom: 25px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        /* Admin UI */
+        .admin-only { display: none; }
+        .admin-border { border: 2px dashed var(--accent) !important; padding: 10px; border-radius: 15px; margin-top: 10px; }
+
+        .card { background: white; padding: 25px; border-radius: 20px; border: 1px solid #e2e8f0; margin-bottom: 25px; position: relative; }
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
-        .mini-card { background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; text-align: center; }
+        .mini-card { background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         
-        input, select { padding: 12px; border: 1.5px solid #e2e8f0; border-radius: 10px; margin-top: 5px; width: 100%; }
+        input, select, textarea { padding: 12px; border: 1.5px solid #e2e8f0; border-radius: 10px; margin-top: 5px; width: 100%; font-family: inherit; font-size: 0.9rem; }
+        input:focus { border-color: var(--primary); outline: none; }
+
         .btn { padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-danger { background: #fef2f2; color: #ef4444; border: 1px solid #fee2e2; margin-top: auto; }
-
-        /* Charts Section */
-        .charts-container { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
-        canvas { max-height: 350px; }
+        .btn-accent { background: var(--accent); color: white; }
+        .btn-danger { background: #fef2f2; color: #ef4444; border: 1px solid #fee2e2; margin-top: 10px; }
+        .btn-pdf { background: #0ea5e9; color: white; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <div id="login-screen">
     <div class="login-box">
-        <i class="fas fa-rocket fa-3x" style="color: var(--primary); margin-bottom: 15px;"></i>
-        <h2>Acesso Mentor</h2>
-        <input type="password" id="pass" placeholder="Senha">
-        <button class="btn btn-primary" style="margin-top: 20px;" onclick="checkLogin()">ACESSAR</button>
+        <div style="background: #f1f5f9; width: 60px; height: 60px; border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+            <i class="fas fa-id-card-alt fa-2x" style="color: var(--primary);"></i>
+        </div>
+        <h2 style="margin-bottom: 5px;">Elite Mentor V.2024</h2>
+        <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 25px;">Insira suas credenciais estratégicas</p>
+        <input type="password" id="pass" placeholder="Senha de Acesso" style="text-align: center; letter-spacing: 2px;">
+        <button class="btn btn-primary" style="margin-top: 20px;" onclick="checkLogin()">AUTENTICAR</button>
     </div>
 </div>
 
 <aside class="sidebar">
     <div style="text-align: center; margin-bottom: 30px;">
-        <img id="side-img" src="https://ui-avatars.com/api/?name=Elite&background=6366f1&color=fff" class="user-photo">
-        <div id="side-name" style="font-weight: 800;">Aluno Elite</div>
-        <div id="side-cargo" style="font-size: 0.7rem; color: var(--secondary); margin-top: 5px;">CARGO</div>
+        <img id="side-img" src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff" class="user-photo" style="width: 80px; height: 80px; border-radius: 22px;">
+        <div id="side-name" style="font-weight: 800; font-size: 1.1rem;">Carregando...</div>
+        <div id="role-badge"></div>
     </div>
     <nav>
-        <div class="nav-link active" onclick="showPage('dash-p')"><i class="fas fa-chart-line"></i> Performance</div>
-        <div class="nav-link" onclick="showPage('rev-p')"><i class="fas fa-history"></i> Revisões</div>
-        <div class="nav-link" onclick="showPage('config-p')"><i class="fas fa-user-cog"></i> Perfil</div>
+        <div class="nav-link active" onclick="showPage('dash-p')"><i class="fas fa-chart-pie"></i> Performance</div>
+        <div class="nav-link" onclick="showPage('rev-p')"><i class="fas fa-clock"></i> Revisões</div>
+        <div class="nav-link" onclick="showPage('config-p')"><i class="fas fa-user-edit"></i> Configurações</div>
     </nav>
-    <button class="btn btn-danger" onclick="reiniciar()"><i class="fas fa-sync"></i> RESETAR DADOS</button>
+    
+    <div class="admin-only" style="margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+        <button class="btn btn-pdf" onclick="gerarRelatorioPDF()"><i class="fas fa-file-pdf"></i> GERAR RELATÓRIO</button>
+        <button class="btn btn-danger" onclick="reiniciar()"><i class="fas fa-trash-alt"></i> ZERAR ALUNO</button>
+    </div>
 </aside>
 
-<main class="main-content">
+<main class="main-content" id="print-area">
     <div id="dash-p" class="page active">
         <div class="stats-grid">
-            <div class="mini-card"><small>APROVEITAMENTO</small><h2 id="kpi-media">0%</h2></div>
-            <div class="mini-card"><small>TOTAL QUESTÕES</small><h2 id="kpi-total">0</h2></div>
-            <div class="mini-card"><small>TOTAL ACERTOS</small><h2 id="kpi-acertos" style="color: var(--secondary)">0</h2></div>
+            <div class="mini-card"><small style="color: #94a3b8; font-weight: 700;">APROVEITAMENTO</small><h2 id="kpi-media" style="margin: 5px 0 0 0; font-size: 2rem;">0%</h2></div>
+            <div class="mini-card"><small style="color: #94a3b8; font-weight: 700;">TOTAL QUESTÕES</small><h2 id="kpi-total" style="margin: 5px 0 0 0; font-size: 2rem;">0</h2></div>
+            <div class="mini-card"><small style="color: #94a3b8; font-weight: 700;">TOTAL ACERTOS</small><h2 id="kpi-acertos" style="margin: 5px 0 0 0; font-size: 2rem; color: var(--secondary)">0</h2></div>
         </div>
 
         <div class="card">
-            <h3 style="margin-top:0">Registrar Desempenho</h3>
+            <h3 style="margin-top:0"><i class="fas fa-pen-nib" style="color: var(--primary); margin-right: 10px;"></i>Lançar Nova Sessão</h3>
             <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
-                <select id="selCargo" onchange="atualizarCargo()">
-                    <option value="">Selecione o Cargo</option>
-                    <option value="Polícia Civil/Federal">Polícia Civil / Federal</option>
-                    <option value="SEFA-PA (Fiscal)">SEFA-PA (Fiscal)</option>
-                </select>
+                <select id="selCargo" onchange="atualizarCargo()"><option value="">Selecionar Cargo</option><option value="Polícia Civil/Federal">Área Policial (PC/PF)</option><option value="SEFA-PA (Fiscal)">Área Fiscal (SEFA-PA)</option></select>
                 <select id="selDisc" onchange="carregarAssuntos()"><option>Disciplina</option></select>
                 <select id="selAssunto"><option>Assunto</option></select>
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 15px; margin-top: 15px;">
-                <div><label><small>TOTAL DE QUESTÕES</small></label><input type="number" id="fTotal" placeholder="Ex: 10"></div>
-                <div><label><small>QUANTOS ERROS?</small></label><input type="number" id="fErr" placeholder="Ex: 6"></div>
-                <div style="display: flex; align-items: flex-end;"><button class="btn btn-primary" onclick="salvar()">REGISTRAR SESSÃO</button></div>
+                <div><label><small>TOTAL QUESTÕES</small></label><input type="number" id="fTotal" placeholder="Ex: 10"></div>
+                <div><label><small>ERROS COMETIDOS</small></label><input type="number" id="fErr" placeholder="Ex: 6"></div>
+                <div style="display: flex; align-items: flex-end;"><button class="btn btn-primary" onclick="salvar()"><i class="fas fa-save"></i> SALVAR DESEMPENHO</button></div>
             </div>
         </div>
 
-        <div class="charts-container">
-            <div class="card"><h4>Equilíbrio por Disciplina</h4><canvas id="radarChart"></canvas></div>
-            <div class="card"><h4>Evolução de Acertos (%)</h4><canvas id="lineChart"></canvas></div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
+            <div class="card"><h4>Raio-X por Matéria (%)</h4><canvas id="radarChart"></canvas></div>
+            <div class="card">
+                <h4><i class="fas fa-bullseye" style="color: var(--accent);"></i> Plano de Guerra do Mentor</h4>
+                <textarea id="obs-mentor" rows="10" placeholder="Aguardando orientações do mentor..."></textarea>
+                <div class="admin-only admin-border">
+                    <button class="btn btn-accent" onclick="salvarObs()"><i class="fas fa-check-circle"></i> ATUALIZAR PLANO</button>
+                    <small style="color: var(--accent); display: block; margin-top: 5px; text-align: center; font-weight: 700;">MODO MENTOR ATIVO</small>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -106,16 +123,19 @@
     </div>
 
     <div id="config-p" class="page">
-        <h1>Configurações</h1>
-        <div class="card" style="max-width: 400px;">
+        <h1>Perfil do Aluno</h1>
+        <div class="card" style="max-width: 500px;">
             <label>Nome do Aluno</label><input type="text" id="cfg-nome" onchange="salvarPerfil()">
-            <label style="margin-top:15px; display:block">URL da Foto</label><input type="text" id="cfg-foto" onchange="salvarPerfil()">
+            <label style="margin-top:15px; display:block">URL Avatar</label><input type="text" id="cfg-foto" onchange="salvarPerfil()">
         </div>
     </div>
 </main>
 
 <script>
-    const SENHA = "2024";
+    const PASS_MENTOR = "mentoria@elite";
+    const PASS_ALUNO = "aluno@elite";
+    let userRole = "aluno";
+
     const editais = {
         "Polícia Civil/Federal": ["Língua Portuguesa", "Matemática e Raciocínio Lógico", "Direito Constitucional", "Direito Administrativo", "Direito Penal", "Direito Processual Penal", "Legislação Especial", "Arquivologia", "Estatística", "Informática"],
         "SEFA-PA (Fiscal)": ["Língua Portuguesa", "Direito Constitucional", "Direito Administrativo", "Legislação Tributária (PA)", "Estatística Descritiva", "Matemática Financeira", "Informática"]
@@ -133,22 +153,34 @@
         "Informática": ["Gestão Ágil", "BI/Power BI", "IA/Machine Learning", "IoT", "Visão Computacional/OCR", "Geoprocessamento"],
         "Direito Administrativo": ["Atos", "Agentes", "Poderes", "Licitações 14.133", "Controle"],
         "Estatística Descritiva": ["Gráficos/Tabelas", "Probabilidades", "Inferência", "Amostragem", "Testes Hipóteses"],
-        "Arquivologia": ["Princípios", "Protocolo", "Classificação", "Temporalidade", "Preservação"],
-        "Estatística": ["Descritiva", "Probabilidade", "Inferência"]
+        "Arquivologia": ["Princípios", "Protocolo", "Classificação", "Temporalidade", "Preservação"]
     };
 
-    let dados = JSON.parse(localStorage.getItem('elite_v4_dados')) || [];
-    let perfil = JSON.parse(localStorage.getItem('elite_v4_perfil')) || { nome: "Aluno Elite", foto: "", cargo: "" };
-    let chartRadar, chartLine;
+    let dados = JSON.parse(localStorage.getItem('elite_v6_dados')) || [];
+    let perfil = JSON.parse(localStorage.getItem('elite_v6_perfil')) || { nome: "Estudante Elite", foto: "", cargo: "", obs: "" };
+    let chartRadar;
 
     function checkLogin() {
-        if(document.getElementById('pass').value === SENHA) {
+        const pass = document.getElementById('pass').value;
+        if(pass === PASS_MENTOR) {
+            userRole = "mentor";
             document.getElementById('login-screen').style.display = 'none';
+            document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
+            document.getElementById('role-badge').innerHTML = '<span class="badge-mentor">ACESSO MENTOR</span>';
+            document.getElementById('obs-mentor').disabled = false;
             init();
-        }
+        } else if (pass === PASS_ALUNO) {
+            userRole = "aluno";
+            document.getElementById('login-screen').style.display = 'none';
+            document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+            document.getElementById('role-badge').innerHTML = '<span style="color:#94a3b8; font-size:10px">ESTUDANTE</span>';
+            document.getElementById('obs-mentor').disabled = true;
+            init();
+        } else { alert("Senha Inválida!"); }
     }
 
     function init() {
+        document.getElementById('obs-mentor').value = perfil.obs || "";
         render();
     }
 
@@ -182,28 +214,30 @@
     function salvarPerfil() {
         perfil.nome = document.getElementById('cfg-nome').value || perfil.nome;
         perfil.foto = document.getElementById('cfg-foto').value || perfil.foto;
-        localStorage.setItem('elite_v4_perfil', JSON.stringify(perfil));
+        localStorage.setItem('elite_v6_perfil', JSON.stringify(perfil));
         document.getElementById('side-name').innerText = perfil.nome;
-        document.getElementById('side-cargo').innerText = perfil.cargo || "CARGO";
         if(perfil.foto) document.getElementById('side-img').src = perfil.foto;
+    }
+
+    function salvarObs() {
+        perfil.obs = document.getElementById('obs-mentor').value;
+        localStorage.setItem('elite_v6_perfil', JSON.stringify(perfil));
+        alert("Plano de Guerra atualizado!");
     }
 
     function salvar() {
         const total = parseInt(document.getElementById('fTotal').value) || 0;
         const erros = parseInt(document.getElementById('fErr').value) || 0;
         const acertos = total - erros;
-        const mat = document.getElementById('selDisc').value;
-        const top = document.getElementById('selAssunto').value;
-
-        if(acertos < 0) return alert("Erros não podem ser maiores que o total!");
-        if(!top) return alert("Selecione o assunto!");
-
+        if(total <= 0 || acertos < 0) return alert("Verifique os números inseridos!");
+        
         dados.push({
             data: new Date().toLocaleDateString('pt-BR'),
-            fullDate: new Date().toISOString(),
-            materia: mat, topico: top, total: total, acertos: acertos, erros: erros
+            materia: document.getElementById('selDisc').value,
+            topico: document.getElementById('selAssunto').value,
+            total: total, acertos: acertos, dataIso: new Date().toISOString()
         });
-        localStorage.setItem('elite_v4_dados', JSON.stringify(dados));
+        localStorage.setItem('elite_v6_dados', JSON.stringify(dados));
         render();
     }
 
@@ -211,22 +245,14 @@
         salvarPerfil();
         const tQ = dados.reduce((a, b) => a + b.total, 0);
         const tA = dados.reduce((a, b) => a + b.acertos, 0);
-        const media = tQ > 0 ? ((tA/tQ)*100).toFixed(1) : 0;
-
-        document.getElementById('kpi-media').innerText = media + "%";
+        document.getElementById('kpi-media').innerText = tQ > 0 ? ((tA/tQ)*100).toFixed(1) + "%" : "0%";
         document.getElementById('kpi-total').innerText = tQ;
         document.getElementById('kpi-acertos').innerText = tA;
-
-        renderCharts();
-    }
-
-    function renderCharts() {
-        // RADAR
+        
         const mData = {};
         dados.forEach(d => {
             if(!mData[d.materia]) mData[d.materia] = {a:0, t:0};
-            mData[d.materia].a += d.acertos;
-            mData[d.materia].t += d.total;
+            mData[d.materia].a += d.acertos; mData[d.materia].t += d.total;
         });
         const labels = Object.keys(mData);
         const scores = labels.map(l => (mData[l].a / mData[l].t * 100).toFixed(1));
@@ -234,25 +260,8 @@
         if(chartRadar) chartRadar.destroy();
         chartRadar = new Chart(document.getElementById('radarChart'), {
             type: 'radar',
-            data: { labels: labels, datasets: [{ label: '% Acerto', data: scores, backgroundColor: 'rgba(99,102,241,0.2)', borderColor: '#6366f1' }] },
-            options: { scales: { r: { min: 0, max: 100 } } }
-        });
-
-        // LINE (Evolução Diária)
-        const hist = {};
-        dados.forEach(d => {
-            if(!hist[d.data]) hist[d.data] = {a:0, t:0};
-            hist[d.data].a += d.acertos;
-            hist[d.data].t += d.total;
-        });
-        const dias = Object.keys(hist);
-        const evol = dias.map(d => (hist[d].a / hist[d].t * 100).toFixed(1));
-
-        if(chartLine) chartLine.destroy();
-        chartLine = new Chart(document.getElementById('lineChart'), {
-            type: 'line',
-            data: { labels: dias, datasets: [{ label: 'Média do Dia %', data: evol, borderColor: '#10b981', tension: 0.3, fill: true, backgroundColor: 'rgba(16,185,129,0.1)' }] },
-            options: { scales: { y: { min: 0, max: 100 } } }
+            data: { labels: labels, datasets: [{ label: '% de Acerto', data: scores, backgroundColor: 'rgba(99,102,241,0.2)', borderColor: '#6366f1', borderWidth: 3 }] },
+            options: { scales: { r: { min: 0, max: 100, ticks: { display: false } } } }
         });
     }
 
@@ -260,14 +269,29 @@
         const list = document.getElementById('rev-list');
         list.innerHTML = '';
         dados.slice().reverse().forEach(s => {
-            list.innerHTML += `<div style="padding:15px; background:white; border-radius:12px; margin-bottom:10px; border-left:4px solid #6366f1">
-                <strong>${s.materia}</strong> - ${s.topico} <br>
-                <small>Estudado em: ${s.data} | Desempenho: ${((s.acertos/s.total)*100).toFixed(1)}%</small>
+            list.innerHTML += `<div style="padding:15px; background:white; border-radius:12px; margin-bottom:10px; border-left:5px solid var(--primary); display:flex; justify-content:space-between; align-items:center; box-shadow: 0 2px 4px rgba(0,0,0,0.05)">
+                <div><strong>${s.materia}</strong><br><small style="color:#64748b">${s.topico}</small></div>
+                <div style="text-align:right"><b>${s.data}</b><br><span style="color:var(--secondary); font-weight:700">${((s.acertos/s.total)*100).toFixed(0)}%</span></div>
             </div>`;
         });
     }
 
-    function reiniciar() { if(confirm("Zerar todos os dados?")) { localStorage.clear(); location.reload(); } }
+    async function gerarRelatorioPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('p', 'pt', 'a4');
+        const element = document.getElementById('print-area');
+        
+        html2canvas(element).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const imgProps = doc.getImageProperties(imgData);
+            const pdfWidth = doc.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+            doc.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            doc.save(`Relatorio_Elite_${perfil.nome}.pdf`);
+        });
+    }
+
+    function reiniciar() { if(confirm("Deseja deletar todos os dados deste aluno?")) { localStorage.clear(); location.reload(); } }
 </script>
 </body>
 </html>
