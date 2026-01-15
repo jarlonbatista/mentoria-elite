@@ -3,111 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elite Mentor | Gestão & Revisões</title>
+    <title>Elite Mentor | Gestão Estratégica</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root { --primary: #4f46e5; --secondary: #10b981; --dark: #0f172a; --bg: #f8fafc; --sidebar: #1e293b; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; display: flex; color: #1e293b; min-height: 100vh; }
-
-        /* Login */
-        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--dark); display: flex; align-items: center; justify-content: center; z-index: 2000; }
-        .login-box { background: white; padding: 40px; border-radius: 16px; width: 350px; text-align: center; }
+        :root { 
+            --primary: #6366f1; --secondary: #10b981; --accent: #f59e0b;
+            --dark: #0f172a; --sidebar: #1e293b; --bg: #f8fafc; --text: #334155;
+        }
         
-        /* Sidebar */
-        .sidebar { width: 300px; background: var(--sidebar); color: white; height: 100vh; position: fixed; padding: 25px; box-sizing: border-box; display: flex; flex-direction: column; z-index: 1000; }
-        .profile-section { text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .user-photo { width: 80px; height: 80px; border-radius: 50%; background: #334155; margin: 0 auto 10px; border: 3px solid var(--secondary); object-fit: cover; display: block; }
-        .user-name { font-weight: 700; font-size: 1rem; color: white; }
+        * { box-sizing: border-box; transition: all 0.2s ease; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; display: flex; color: var(--text); overflow-x: hidden; }
 
-        .nav-menu { flex-grow: 1; margin-top: 10px; }
-        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 10px; color: #94a3b8; text-decoration: none; cursor: pointer; transition: 0.3s; margin-bottom: 5px; }
-        .nav-link:hover, .nav-link.active { background: var(--primary); color: white; }
+        /* Login Screen Premium */
+        #login-screen { position: fixed; inset: 0; background: radial-gradient(circle at top right, #1e293b, #0f172a); display: flex; align-items: center; justify-content: center; z-index: 3000; }
+        .login-box { background: white; padding: 50px; border-radius: 24px; width: 400px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        .login-box h2 { font-weight: 800; color: var(--dark); margin-bottom: 8px; }
 
-        /* Conteúdo */
-        .main-content { margin-left: 300px; padding: 40px; width: calc(100% - 300px); box-sizing: border-box; }
-        .page { display: none; animation: fadeIn 0.3s ease; }
+        /* Sidebar Moderna */
+        .sidebar { width: 280px; background: var(--sidebar); color: white; height: 100vh; position: fixed; padding: 25px; display: flex; flex-direction: column; border-right: 1px solid rgba(255,255,255,0.05); }
+        .profile-area { text-align: center; padding-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
+        .user-photo { width: 90px; height: 90px; border-radius: 22px; background: #334155; margin: 0 auto 15px; border: 3px solid var(--primary); object-fit: cover; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); }
+        
+        .nav-link { 
+            display: flex; align-items: center; gap: 15px; padding: 14px 18px; border-radius: 12px; 
+            color: #94a3b8; text-decoration: none; cursor: pointer; margin-bottom: 8px; font-weight: 600;
+        }
+        .nav-link:hover, .nav-link.active { background: var(--primary); color: white; box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3); }
+
+        /* Main Content */
+        .main-content { margin-left: 280px; padding: 40px; width: 100%; max-width: 1400px; }
+        .page { display: none; animation: slideUp 0.4s ease-out; }
         .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #e2e8f0; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; margin-top: 5px; box-sizing: border-box; }
+        /* Grid de Mini Stats */
+        .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .mini-card { background: white; padding: 20px; border-radius: 20px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 15px; }
+        .icon-circle { width: 50px; height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+
+        /* Estudo Form */
+        .card { background: white; padding: 30px; border-radius: 24px; border: 1px solid #e2e8f0; margin-bottom: 25px; }
+        select, input { padding: 12px 16px; border: 1.5px solid #e2e8f0; border-radius: 12px; font-size: 0.95rem; background: #fdfdfd; }
+        select:focus, input:focus { border-color: var(--primary); outline: none; background: white; }
+
+        .btn { padding: 14px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-primary { background: var(--primary); color: white; width: 100%; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 20px -5px rgba(99, 102, 241, 0.4); }
+
+        /* Revisões List */
+        .rev-card { background: white; padding: 15px 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+        .rev-tag { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }
         
-        .btn { padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; border: none; width: 100%; transition: 0.3s; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-danger { background: rgba(239, 68, 68, 0.1); color: #ef4444; margin-top: auto; }
-
-        /* Estilo Calendário */
-        .rev-item { display: flex; justify-content: space-between; padding: 10px; border-left: 4px solid var(--primary); background: #f1f5f9; margin-bottom: 8px; border-radius: 4px; font-size: 0.9rem; }
-        .rev-date { font-weight: bold; color: var(--primary); min-width: 100px; }
+        /* Progress Bar */
+        .prog-container { background: #e2e8f0; border-radius: 10px; height: 10px; width: 100%; margin: 15px 0; overflow: hidden; }
+        .prog-fill { background: linear-gradient(90deg, var(--primary), var(--secondary)); height: 100%; transition: width 1s ease; }
     </style>
 </head>
 <body>
 
 <div id="login-screen">
     <div class="login-box">
-        <h2>Elite Mentor Login</h2>
-        <input type="password" id="pass" placeholder="Senha">
-        <button class="btn btn-primary" style="margin-top: 15px;" onclick="checkLogin()">ENTRAR</button>
+        <div style="background: var(--bg); width: 60px; height: 60px; border-radius: 18px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+            <i class="fas fa-bolt fa-2x" style="color: var(--primary);"></i>
+        </div>
+        <h2>Bem-vindo Mentor</h2>
+        <p style="color: #64748b; margin-bottom: 30px;">Identifique-se para gerenciar seus estudos.</p>
+        <input type="password" id="pass" placeholder="Sua senha secreta">
+        <button class="btn btn-primary" style="margin-top: 25px;" onclick="checkLogin()">ACESSAR PAINEL</button>
     </div>
 </div>
 
-<div class="sidebar">
-    <div class="profile-section">
-        <img id="sidebar-img" src="https://via.placeholder.com/80" class="user-photo">
-        <div id="sidebar-name" class="user-name">Aluno Elite</div>
+<aside class="sidebar">
+    <div class="profile-area">
+        <img id="side-img" src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff" class="user-photo">
+        <div id="side-name" style="font-weight: 800;">Aluno de Elite</div>
+        <div style="font-size: 0.7rem; color: var(--secondary); margin-top: 5px; letter-spacing: 1px;">MODO ESTRATÉGICO</div>
     </div>
+
     <nav class="nav-menu">
-        <div class="nav-link active" onclick="showPage('dashboard-page')"><i class="fas fa-chart-bar"></i> Desempenho</div>
-        <div class="nav-link" onclick="showPage('calendar-page')"><i class="fas fa-calendar-check"></i> Revisões</div>
-        <div class="nav-link" onclick="showPage('config-page')"><i class="fas fa-cog"></i> Configurações</div>
+        <div class="nav-link active" onclick="showPage('dash-p')"><i class="fas fa-chart-pie"></i> Dashboard</div>
+        <div class="nav-link" onclick="showPage('rev-p')"><i class="fas fa-calendar-alt"></i> Revisões</div>
+        <div class="nav-link" onclick="showPage('config-p')"><i class="fas fa-user-edit"></i> Perfil</div>
     </nav>
-    <button class="btn btn-danger" onclick="reiniciarEstudos()"><i class="fas fa-trash"></i> ZERAR TUDO</button>
-</div>
+
+    <div style="margin-top: auto;">
+        <button class="btn" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; width: 100%; font-size: 0.8rem;" onclick="reiniciarEstudos()">
+            <i class="fas fa-power-off"></i> RESETAR DADOS
+        </button>
+    </div>
+</aside>
 
 <main class="main-content">
     
-    <div id="dashboard-page" class="page active">
-        <h1>Dashboard Estratégico</h1>
+    <div id="dash-p" class="page active">
+        <header style="margin-bottom: 30px;">
+            <h1 style="font-weight: 800; font-size: 2.2rem; margin: 0;">Performance Geral</h1>
+            <p style="color: #64748b;">Acompanhamento em tempo real da evolução do edital.</p>
+        </header>
+
+        <div class="stats-row">
+            <div class="mini-card">
+                <div class="icon-circle" style="background: rgba(99,102,241,0.1); color: var(--primary);"><i class="fas fa-bullseye"></i></div>
+                <div><small style="display:block; color:#94a3b8">ACERTOS</small><strong id="kpi-media" style="font-size: 1.2rem;">0%</strong></div>
+            </div>
+            <div class="mini-card">
+                <div class="icon-circle" style="background: rgba(16,185,129,0.1); color: var(--secondary);"><i class="fas fa-check-double"></i></div>
+                <div><small style="display:block; color:#94a3b8">QUESTÕES</small><strong id="kpi-total" style="font-size: 1.2rem;">0</strong></div>
+            </div>
+            <div class="mini-card">
+                <div class="icon-circle" style="background: rgba(245,158,11,0.1); color: var(--accent);"><i class="fas fa-book-open"></i></div>
+                <div><small style="display:block; color:#94a3b8">EDITAL</small><strong id="kpi-edital" style="font-size: 1.2rem;">0%</strong></div>
+            </div>
+        </div>
+
         <div class="card">
-            <h3><i class="fas fa-plus"></i> Novo Estudo</h3>
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+            <h3 style="margin-top: 0;"><i class="fas fa-plus-circle" style="color: var(--primary); margin-right: 10px;"></i> Registrar Nova Sessão</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
                 <select id="selDisc" onchange="carregarAssuntos()"></select>
                 <select id="selAssunto"></select>
-                <div style="display: flex; gap: 5px;">
-                    <input type="number" id="fAcert" placeholder="Acertos">
-                    <input type="number" id="fErr" placeholder="Erros">
-                </div>
+                <input type="number" id="fAcert" placeholder="Acertos">
+                <input type="number" id="fErr" placeholder="Erros">
+                <button class="btn btn-primary" onclick="salvarSessao()">SALVAR ESTUDO</button>
             </div>
-            <button class="btn btn-primary" style="margin-top: 10px;" onclick="salvarSessao()">SALVAR E AGENDAR REVISÕES</button>
         </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-            <div class="card"><canvas id="meuRadar"></canvas></div>
-            <div class="card"><h3>Metas do Mentor</h3><textarea id="obs-mentor" rows="10"></textarea></div>
+
+        <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 30px;">
+            <div class="card"><h3>Equilíbrio por Matéria</h3><canvas id="radarChart"></canvas></div>
+            <div class="card"><h3>Plano de Guerra</h3><textarea id="obs-mentor" rows="12" style="resize:none" placeholder="O que o aluno deve focar hoje?"></textarea></div>
         </div>
     </div>
 
-    <div id="calendar-page" class="page">
-        <h1>📅 Calendário de Revisões Espaçadas</h1>
-        <p>O sistema agenda automaticamente revisões de 24h, 7 dias e 30 dias após cada estudo.</p>
-        
-        <div class="card">
-            <h3>Próximas Revisões</h3>
-            <div id="lista-revisoes">
-                </div>
-        </div>
+    <div id="rev-p" class="page">
+        <header style="margin-bottom: 30px;">
+            <h1 style="font-weight: 800;">Agenda de Revisões</h1>
+            <p>O algoritmo calculou estas metas baseadas na curva do esquecimento.</p>
+        </header>
+        <div id="rev-list"></div>
     </div>
 
-    <div id="config-page" class="page">
-        <h1>Configurações</h1>
-        <div class="card">
-            <label>Nome do Aluno</label><input type="text" id="cfg-nome" onchange="updateProfile()">
-            <label style="margin-top: 10px; display: block;">Link da Foto</label><input type="text" id="cfg-foto" onchange="updateProfile()">
-            <label style="margin-top: 10px; display: block;">Chave PIX para Renovação</label><input type="text" placeholder="Chave Pix aqui...">
+    <div id="config-p" class="page">
+        <h1>Configurações do Perfil</h1>
+        <div class="card" style="max-width: 600px;">
+            <div class="input-group">
+                <label>Nome do Aluno</label>
+                <input type="text" id="cfg-nome" onchange="saveProfile()">
+            </div>
+            <div class="input-group" style="margin-top: 20px;">
+                <label>URL da Imagem (Avatar)</label>
+                <input type="text" id="cfg-foto" onchange="saveProfile()">
+            </div>
+            <div style="margin-top: 30px; padding: 20px; background: #f1f5f9; border-radius: 15px;">
+                <h4 style="margin:0 0 10px 0"><i class="fas fa-wallet"></i> Financeiro</h4>
+                <p style="font-size: 0.85rem;">Insira sua chave PIX para que o aluno possa renovar a mentoria.</p>
+                <input type="text" placeholder="Sua chave aqui...">
+            </div>
         </div>
     </div>
 
@@ -116,109 +170,100 @@
 <script>
     const SENHA_MESTRA = "2024";
     const disciplinas = {
-        "Português": ["Gramática", "Interpretação"],
-        "Raciocínio Lógico": ["Lógica", "Matemática"],
+        "Português": ["Interpretação", "Crase", "Sintaxe"],
+        "RLM": ["Lógica Proposicional", "Conjuntos"],
         "Informática": ["Redes", "Segurança", "Python"],
-        "Direito Administrativo": ["Atos", "Licitações"],
-        "Direito Constitucional": ["Art. 5º", "Poderes"],
-        "Contabilidade Geral": ["Balanço", "DRE"],
-        "Contabilidade Avançada": ["Consolidação"],
-        "Direito Penal": ["Teoria do Crime"],
-        "Direito Processual Penal": ["Prisões"],
+        "Dir. Administrativo": ["Atos", "Licitações"],
+        "Dir. Constitucional": ["Direitos Fundamentais", "Poderes"],
+        "Contabilidade": ["Balanço", "DRE", "DFC"],
+        "Dir. Penal": ["Teoria do Crime", "Crimes contra Pessoa"],
+        "Dir. Processual Penal": ["Inquérito", "Prisões"],
         "Economia": ["Micro", "Macro"],
-        "Estatística": ["Probabilidade"],
-        "Administração Pública": ["Gestão"]
+        "Estatística": ["Probabilidade", "Descritiva"],
+        "TI / Sistemas": ["Java", "Engenharia de Software"],
+        "Adm Pública": ["Governança", "Ética"]
     };
 
-    let dados = JSON.parse(localStorage.getItem('dadosMentoria')) || [];
-    let perfil = JSON.parse(localStorage.getItem('perfilMentoria')) || { nome: "Aluno Elite", foto: "" };
+    let dados = JSON.parse(localStorage.getItem('elite_dados')) || [];
+    let perfil = JSON.parse(localStorage.getItem('elite_perfil')) || { nome: "Aluno de Elite", foto: "" };
+    let chartObj;
 
     function checkLogin() {
         if(document.getElementById('pass').value === SENHA_MESTRA) {
             document.getElementById('login-screen').style.display = 'none';
-            inicializar();
-        }
+            initApp();
+        } else { alert("Senha inválida"); }
     }
 
-    function inicializar() {
-        const selD = document.getElementById('selDisc');
-        Object.keys(disciplinas).forEach(d => selD.innerHTML += `<option value="${d}">${d}</option>`);
-        updateProfile();
-        carregarAssuntos();
+    function initApp() {
+        const dSel = document.getElementById('selDisc');
+        dSel.innerHTML = '<option value="">Disciplina</option>';
+        Object.keys(disciplinas).forEach(d => dSel.innerHTML += `<option>${d}</option>`);
+        saveProfile(); 
         render();
     }
 
     function carregarAssuntos() {
         const d = document.getElementById('selDisc').value;
-        const selA = document.getElementById('selAssunto');
-        selA.innerHTML = '';
-        disciplinas[d].forEach(a => selA.innerHTML += `<option value="${a}">${a}</option>`);
+        const aSel = document.getElementById('selAssunto');
+        aSel.innerHTML = '';
+        if(d) disciplinas[d].forEach(a => aSel.innerHTML += `<option>${a}</option>`);
     }
 
-    function showPage(pId) {
+    function showPage(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        document.getElementById(pId).classList.add('active');
+        document.getElementById(id).classList.add('active');
         event.currentTarget.classList.add('active');
-        if(pId === 'calendar-page') renderRevisoes();
+        if(id === 'rev-p') renderRevisoes();
     }
 
-    function updateProfile() {
+    function saveProfile() {
         perfil.nome = document.getElementById('cfg-nome').value || perfil.nome;
         perfil.foto = document.getElementById('cfg-foto').value || perfil.foto;
-        localStorage.setItem('perfilMentoria', JSON.stringify(perfil));
-        document.getElementById('sidebar-name').innerText = perfil.nome;
-        if(perfil.foto) document.getElementById('sidebar-img').src = perfil.foto;
+        localStorage.setItem('elite_perfil', JSON.stringify(perfil));
+        document.getElementById('side-name').innerText = perfil.nome;
+        document.getElementById('cfg-nome').value = perfil.nome;
+        if(perfil.foto) {
+            document.getElementById('side-img').src = perfil.foto;
+            document.getElementById('cfg-foto').value = perfil.foto;
+        }
     }
 
     function salvarSessao() {
-        const hoje = new Date();
-        const s = {
+        const ac = parseInt(document.getElementById('fAcert').value) || 0;
+        const er = parseInt(document.getElementById('fErr').value) || 0;
+        const top = document.getElementById('selAssunto').value;
+        if(!top) return alert("Selecione o assunto!");
+
+        dados.push({
             materia: document.getElementById('selDisc').value,
-            topico: document.getElementById('selAssunto').value,
-            acertos: parseInt(document.getElementById('fAcert').value) || 0,
-            erros: parseInt(document.getElementById('fErr').value) || 0,
-            data: hoje.toISOString()
-        };
-        dados.push(s);
-        localStorage.setItem('dadosMentoria', JSON.stringify(dados));
-        alert("Sessão salva e revisões agendadas!");
+            topico: top, acertos: ac, erros: er, data: new Date().toISOString()
+        });
+        localStorage.setItem('elite_dados', JSON.stringify(dados));
         render();
-    }
-
-    function renderRevisoes() {
-        const lista = document.getElementById('lista-revisoes');
-        lista.innerHTML = '';
-        const intervalos = [1, 7, 30]; // Dias para revisão
-
-        let todasRevisoes = [];
-
-        dados.forEach(estudo => {
-            intervalos.forEach(dias => {
-                let dataRev = new Date(estudo.data);
-                dataRev.setDate(dataRev.getDate() + dias);
-                todasRevisoes.push({
-                    materia: estudo.materia,
-                    topico: estudo.topico,
-                    data: dataRev,
-                    tipo: `${dias}d`
-                });
-            });
-        });
-
-        // Ordenar por data
-        todasRevisoes.sort((a, b) => a.data - b.data);
-
-        todasRevisoes.forEach(r => {
-            const item = document.createElement('div');
-            item.className = 'rev-item';
-            const formatada = r.data.toLocaleDateString('pt-BR');
-            item.innerHTML = `<span class="rev-date">${formatada} (${r.tipo})</span> <span>${r.materia} - ${r.topico}</span>`;
-            lista.appendChild(item);
-        });
+        alert("Estudo salvo com sucesso!");
     }
 
     function render() {
+        const tA = dados.reduce((a, b) => a + b.acertos, 0);
+        const tE = dados.reduce((a, b) => a + b.erros, 0);
+        const total = tA + tE;
+        const media = total > 0 ? ((tA/total)*100).toFixed(1) : 0;
+        
+        document.getElementById('kpi-media').innerText = media + "%";
+        document.getElementById('kpi-total').innerText = total;
+
+        // Progresso Edital
+        let totalEdital = 0;
+        Object.keys(disciplinas).forEach(k => totalEdital += disciplinas[k].length);
+        const vistos = [...new Set(dados.map(d => d.topico))].length;
+        document.getElementById('kpi-edital').innerText = ((vistos/totalEdital)*100).toFixed(0) + "%";
+
+        renderChart();
+    }
+
+    function renderChart() {
         const agrupar = {};
         dados.forEach(i => {
             if(!agrupar[i.materia]) agrupar[i.materia] = { a: 0, t: 0 };
@@ -228,15 +273,45 @@
         const labels = Object.keys(agrupar);
         const values = labels.map(l => (agrupar[l].a / agrupar[l].t * 100).toFixed(1));
 
-        if(window.myRadar) window.myRadar.destroy();
-        window.myRadar = new Chart(document.getElementById('meuRadar'), {
+        if(chartObj) chartObj.destroy();
+        chartObj = new Chart(document.getElementById('radarChart'), {
             type: 'radar',
-            data: { labels: labels, datasets: [{ label: '% Acertos', data: values, backgroundColor: 'rgba(79, 70, 229, 0.2)', borderColor: '#4f46e5' }] },
+            data: { labels: labels, datasets: [{ label: '% Acertos', data: values, backgroundColor: 'rgba(99, 102, 241, 0.2)', borderColor: '#6366f1', pointBackgroundColor: '#6366f1' }] },
             options: { scales: { r: { min: 0, max: 100 } } }
         });
     }
 
-    function reiniciarEstudos() { if(confirm("Zerar tudo?")) { localStorage.clear(); location.reload(); } }
+    function renderRevisoes() {
+        const list = document.getElementById('rev-list');
+        list.innerHTML = '';
+        const gaps = [{d:1, c:'#6366f1', t:'24h'}, {d:7, c:'#f59e0b', t:'7d'}, {d:30, c:'#10b981', t:'30d'}];
+        
+        dados.slice().reverse().forEach(estudo => {
+            gaps.forEach(gap => {
+                let rDate = new Date(estudo.data);
+                rDate.setDate(rDate.getDate() + gap.d);
+                const hoje = new Date();
+                hoje.setHours(0,0,0,0); rDate.setHours(0,0,0,0);
+
+                const status = rDate < hoje ? 'Atrasada' : (rDate.getTime() === hoje.getTime() ? 'Hoje' : 'Futura');
+                
+                list.innerHTML += `
+                    <div class="rev-card">
+                        <div>
+                            <span class="rev-tag" style="background:${gap.c}20; color:${gap.c}">${gap.t}</span>
+                            <strong style="margin-left:10px">${estudo.materia}</strong> - ${estudo.topico}
+                        </div>
+                        <div style="text-align:right">
+                            <div style="font-size:0.8rem; font-weight:700">${rDate.toLocaleDateString()}</div>
+                            <small style="color:${status === 'Atrasada' ? '#ef4444' : '#94a3b8'}">${status}</small>
+                        </div>
+                    </div>
+                `;
+            });
+        });
+    }
+
+    function reiniciarEstudos() { if(confirm("Apagar tudo?")) { localStorage.clear(); location.reload(); } }
 </script>
 </body>
 </html>
