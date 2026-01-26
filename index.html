@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elite Mentor | Gestão Especializada</title>
+    <title>Elite Mentor | Sistema V4</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -12,7 +12,8 @@
     
     <style>
         :root { --primary: #4f46e5; --secondary: #10b981; --danger: #ef4444; --dark: #0f172a; --bg: #f8fafc; --text: #334155; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; color: var(--text); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
 
         /* Login */
         #login-screen { position: fixed; inset: 0; background: var(--dark); display: flex; align-items: center; justify-content: center; z-index: 5000; padding: 20px; }
@@ -20,7 +21,26 @@
 
         /* Layout */
         .mobile-header { display: none; background: #1e293b; color: white; padding: 15px; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 2000; }
-        .sidebar { width: 280px; background: #1e293b; color: white; height: 100vh; position: fixed; padding: 25px; display: flex; flex-direction: column; z-index: 3000; transition: 0.3s; }
+        
+        /* CORREÇÃO DO SIDEBAR (SCROLL) */
+        .sidebar { 
+            width: 280px; 
+            background: #1e293b; 
+            color: white; 
+            height: 100vh; 
+            position: fixed; 
+            padding: 25px; 
+            display: flex; 
+            flex-direction: column; 
+            z-index: 3000; 
+            transition: 0.3s;
+            overflow-y: auto; /* Permite rolar se a tela for pequena */
+        }
+        
+        /* Estilizando a barra de rolagem do menu para ficar bonita */
+        .sidebar::-webkit-scrollbar { width: 6px; }
+        .sidebar::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+
         .main-content { margin-left: 280px; padding: 40px; width: calc(100% - 280px); }
 
         /* Componentes */
@@ -40,12 +60,14 @@
         .btn { padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; width: 100%; margin-top: 10px; transition: 0.2s; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-primary:hover { background: #4338ca; }
-        .admin-only { display: none; }
+        
+        /* Elementos de Admin - IMPORTANTE */
+        .admin-only { display: none; margin-top: 20px; padding-bottom: 20px; } 
 
         /* Responsividade */
         @media (max-width: 768px) {
             .mobile-header { display: flex; }
-            .sidebar { left: -100%; width: 260px; }
+            .sidebar { left: -100%; width: 260px; height: calc(100vh - 60px); top: 60px; } /* Ajuste altura mobile */
             .sidebar.active { left: 0; }
             .main-content { margin-left: 0; width: 100%; padding: 20px; }
             .stats-grid { grid-template-columns: 1fr; }
@@ -59,7 +81,7 @@
         <div style="background: var(--primary); width: 60px; height: 60px; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
             <i class="fas fa-fingerprint fa-2x" style="color: white;"></i>
         </div>
-        <h2>Acesso Elite V3</h2>
+        <h2>Acesso Elite V4</h2>
         <p style="color: #64748b; margin-bottom: 25px;">Selecione seu perfil de acesso</p>
         <input type="password" id="pass" placeholder="Senha" style="text-align: center; font-size: 1.2rem; letter-spacing: 2px;">
         <button class="btn btn-primary" onclick="checkLogin()">ENTRAR</button>
@@ -73,18 +95,35 @@
 </header>
 
 <aside class="sidebar" id="sidebar">
-    <div style="text-align: center; margin-bottom: 30px;">
+    <div style="text-align: center; margin-bottom: 20px;">
         <img id="side-img" src="https://ui-avatars.com/api/?name=Elite&background=4f46e5&color=fff" style="width: 80px; border-radius: 20px; margin-bottom: 10px;">
         <h4 id="side-name" style="margin:0">Visitante</h4>
         <small id="role-badge" style="opacity: 0.7;">...</small>
     </div>
+    
     <nav style="flex-grow: 1;">
-        <div onclick="showPage('dash-p')" style="padding: 12px; cursor: pointer; color: white;"><i class="fas fa-chart-pie" style="width:25px"></i> Dashboard</div>
-        <div onclick="showPage('rev-p')" style="padding: 12px; cursor: pointer; color: #94a3b8;"><i class="fas fa-list-ul" style="width:25px"></i> Revisões</div>
-        <div onclick="showPage('config-p')" style="padding: 12px; cursor: pointer; color: #94a3b8;"><i class="fas fa-cog" style="width:25px"></i> Configurar</div>
+        <div onclick="showPage('dash-p')" style="padding: 12px; cursor: pointer; color: white; display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-chart-pie"></i> Dashboard
+        </div>
+        <div onclick="showPage('rev-p')" style="padding: 12px; cursor: pointer; color: #94a3b8; display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-list-ul"></i> Revisões
+        </div>
+        <div onclick="showPage('config-p')" style="padding: 12px; cursor: pointer; color: #94a3b8; display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-cog"></i> Configurar
+        </div>
     </nav>
+
     <div class="admin-only">
-        <button class="btn" style="background: #ef4444; color: white;" onclick="resetarDados()"><i class="fas fa-trash"></i> ZERAR DADOS</button>
+        <hr style="border-color: rgba(255,255,255,0.1); margin: 15px 0;">
+        <button class="btn" onclick="gerarRelatorioPDF()" style="background: #0ea5e9; color: white;">
+            <i class="fas fa-file-pdf"></i> RELATÓRIO
+        </button>
+        <button class="btn" onclick="resetarDados()" style="background: #ef4444; color: white; margin-top: 10px;">
+            <i class="fas fa-trash"></i> ZERAR DADOS
+        </button>
+        <div style="font-size: 0.7rem; color: #94a3b8; text-align: center; margin-top: 10px;">
+            Acesso MENTOR Ativo
+        </div>
     </div>
 </aside>
 
@@ -101,7 +140,7 @@
             <h3 style="margin-top:0"><i class="fas fa-pen-alt"></i> Novo Registro</h3>
             
             <div style="margin-bottom: 15px;">
-                <label style="font-weight: 700; font-size: 0.9rem;">1. ESCOLHA O EDITAL</label>
+                <label style="font-weight: 700; font-size: 0.9rem;">SELECIONE O EDITAL</label>
                 <select id="selCargo" onchange="atualizarCargo()" style="background: #f1f5f9; font-weight: 600;">
                     <option value="">Selecione a Carreira...</option>
                     <option value="SEFA-PA">SEFA-PA (Área Fiscal)</option>
@@ -177,7 +216,7 @@
             "Língua Portuguesa", "Direito Administrativo", "Direito Constitucional",
             "Direito Penal", "Direito Processual Penal", "Legislação Especial",
             "Estatística (Avançada)", "Raciocínio Lógico", "Informática (TI)", 
-            "Contabilidade Geral (Avançada)"
+            "Contabilidade Geral (Avançada)", "Direitos Humanos"
         ],
         "PC-PA": [
             "Língua Portuguesa", "Raciocínio Lógico", "Noções de Informática",
@@ -201,6 +240,7 @@
         "Contabilidade Geral (Avançada)": ["CPC 00", "Balanço Patrimonial", "DRE", "Análise de Balanços"],
         "Informática (TI)": ["Banco de Dados", "Python/R", "Redes", "Segurança da Informação"],
         "Estatística (Avançada)": ["Probabilidade", "Distribuições", "Inferência", "Regressão"],
+        "Direitos Humanos": ["Teoria Geral", "Tratados Internacionais", "PNDH-3"],
 
         // ESPECÍFICAS PC-PA
         "Conhecimentos do Pará": ["História do Pará", "Geografia do Pará", "Atualidades Regionais"],
@@ -220,8 +260,8 @@
         "TI (Fiscal)": ["Banco de Dados SQL", "Governança de TI", "Segurança"]
     };
 
-    let dados = JSON.parse(localStorage.getItem('elite_v3_dados')) || [];
-    let perfil = JSON.parse(localStorage.getItem('elite_v3_perfil')) || { nome: "Estudante", foto: "", cargo: "", obs: "" };
+    let dados = JSON.parse(localStorage.getItem('elite_v4_dados')) || [];
+    let perfil = JSON.parse(localStorage.getItem('elite_v4_perfil')) || { nome: "Estudante", foto: "", cargo: "", obs: "" };
     let chartRadar;
 
     function checkLogin() {
@@ -297,7 +337,7 @@
         if(erros < 0 || erros > total) return alert("Número de erros inválido!");
         if(!mat || !top) return alert("Selecione matéria e assunto!");
 
-        const acertos = total - erros; // O CÁLCULO DA DIFERENÇA AQUI
+        const acertos = total - erros; 
 
         dados.push({
             data: new Date().toLocaleDateString('pt-BR'),
@@ -309,7 +349,7 @@
             acertos: acertos
         });
         
-        localStorage.setItem('elite_v3_dados', JSON.stringify(dados));
+        localStorage.setItem('elite_v4_dados', JSON.stringify(dados));
         
         // Limpar campos
         document.getElementById('fTotal').value = '';
@@ -320,11 +360,9 @@
     }
 
     function render() {
-        // Filtrar dados pelo cargo atual para não misturar estatísticas
         const cargoAtual = document.getElementById('selCargo').value || perfil.cargo;
         if(cargoAtual) document.getElementById('selCargo').value = cargoAtual;
         
-        // Filtra apenas dados do cargo selecionado (SEPARANDO AS ESTATÍSTICAS)
         const dadosFiltrados = cargoAtual ? dados.filter(d => d.cargo === cargoAtual) : dados;
 
         const tQ = dadosFiltrados.reduce((a, b) => a + b.total, 0);
@@ -379,14 +417,14 @@
     function salvarPerfil() {
         perfil.nome = document.getElementById('cfg-nome').value;
         perfil.foto = document.getElementById('cfg-foto').value;
-        localStorage.setItem('elite_v3_perfil', JSON.stringify(perfil));
+        localStorage.setItem('elite_v4_perfil', JSON.stringify(perfil));
         document.getElementById('side-name').innerText = perfil.nome || "Visitante";
         if(perfil.foto) document.getElementById('side-img').src = perfil.foto;
     }
 
     function salvarObs() {
         perfil.obs = document.getElementById('obs-mentor').value;
-        localStorage.setItem('elite_v3_perfil', JSON.stringify(perfil));
+        localStorage.setItem('elite_v4_perfil', JSON.stringify(perfil));
         alert("Salvo!");
     }
 
