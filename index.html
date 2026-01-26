@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elite Mentor | Dashboard Mobile-Ready</title>
+    <title>Elite Mentor | Sistema Híbrido (Fiscal & Policial)</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -11,49 +11,44 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root { --primary: #6366f1; --secondary: #10b981; --accent: #f59e0b; --dark: #0f172a; --sidebar: #1e293b; --bg: #f8fafc; --text: #334155; }
+        :root { --primary: #4f46e5; --secondary: #10b981; --accent: #f59e0b; --dark: #0f172a; --sidebar: #1e293b; --bg: #f1f5f9; --text: #334155; }
         * { box-sizing: border-box; transition: all 0.2s ease; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
 
-        /* Login Responsivo */
         #login-screen { position: fixed; inset: 0; background: var(--dark); display: flex; align-items: center; justify-content: center; z-index: 4000; padding: 20px; }
-        .login-box { background: white; padding: 30px; border-radius: 24px; width: 100%; max-width: 380px; text-align: center; }
+        .login-box { background: white; padding: 30px; border-radius: 24px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
 
-        /* Navbar Mobile */
         .mobile-header { display: none; background: var(--sidebar); color: white; padding: 15px 20px; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 2000; }
-
-        /* Sidebar Dinâmica */
-        .sidebar { width: 280px; background: var(--sidebar); color: white; height: 100vh; position: fixed; padding: 25px; display: flex; flex-direction: column; z-index: 3000; left: 0; }
-        
+        .sidebar { width: 280px; background: var(--sidebar); color: white; height: 100vh; position: fixed; padding: 25px; display: flex; flex-direction: column; z-index: 3000; left: 0; box-shadow: 4px 0 10px rgba(0,0,0,0.1); }
         .main-content { margin-left: 280px; padding: 30px; width: calc(100% - 280px); flex-grow: 1; }
 
-        /* Grid de Cards Responsivo */
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
         .charts-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
 
-        /* Elementos Visuais */
-        .card { background: white; padding: 20px; border-radius: 20px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
-        .mini-card { background: white; padding: 15px; border-radius: 16px; border: 1px solid #e2e8f0; text-align: center; }
+        .card { background: white; padding: 25px; border-radius: 20px; border: 1px solid #e2e8f0; margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .mini-card { background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; text-align: center; }
+        
         .nav-link { display: flex; align-items: center; gap: 15px; padding: 12px 18px; border-radius: 12px; color: #94a3b8; text-decoration: none; cursor: pointer; margin-bottom: 5px; font-weight: 600; }
         .nav-link.active { background: var(--primary); color: white; }
-        .btn { padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; font-size: 1rem; }
+        .nav-link:hover:not(.active) { background: rgba(255,255,255,0.05); color: white; }
+
+        input, select, textarea { padding: 12px; border: 1.5px solid #e2e8f0; border-radius: 10px; margin-top: 5px; width: 100%; font-family: inherit; font-size: 0.95rem; }
+        input:focus, select:focus { border-color: var(--primary); outline: none; }
+        
+        .btn { padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; font-size: 0.9rem; letter-spacing: 0.5px; text-transform: uppercase; }
         .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { filter: brightness(1.1); }
         .admin-only { display: none; }
 
-        /* MEDIA QUERIES (A MÁGICA DO CELULAR) */
-        @media (max-width: 1024px) {
-            .charts-container { grid-template-columns: 1fr; }
-        }
-
+        @media (max-width: 1024px) { .charts-container { grid-template-columns: 1fr; } }
         @media (max-width: 768px) {
             .mobile-header { display: flex; }
-            .sidebar { left: -100%; width: 250px; transition: 0.3s; }
+            .sidebar { left: -100%; width: 260px; transition: 0.3s; }
             .sidebar.active { left: 0; }
             .main-content { margin-left: 0; width: 100%; padding: 20px; }
-            .stats-grid { grid-template-columns: 1fr; gap: 10px; }
-            .form-grid { grid-template-columns: 1fr; }
-            .mini-card { display: flex; justify-content: space-between; align-items: center; padding: 20px; }
+            .stats-grid, .form-grid { grid-template-columns: 1fr; gap: 10px; }
+            .mini-card { display: flex; justify-content: space-between; align-items: center; }
             .mini-card h2 { margin: 0; }
         }
     </style>
@@ -61,80 +56,86 @@
 <body>
 
 <header class="mobile-header">
-    <div style="font-weight: 800; font-size: 1.2rem;">Elite Mentor</div>
-    <button onclick="toggleMenu()" style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">
-        <i class="fas fa-bars"></i>
-    </button>
+    <div style="font-weight: 800; font-size: 1.2rem;"><i class="fas fa-shield-alt"></i> Elite Híbrido</div>
+    <button onclick="toggleMenu()" style="background: none; border: none; color: white; font-size: 1.5rem;"><i class="fas fa-bars"></i></button>
 </header>
 
 <aside class="sidebar" id="sidebar">
     <div style="text-align: center; margin-bottom: 30px;">
-        <img id="side-img" src="https://ui-avatars.com/api/?name=Elite&background=6366f1&color=fff" class="user-photo" style="width: 70px; border-radius: 15px;">
-        <div id="side-name" style="font-weight: 800; margin-top: 10px;">Estudante</div>
+        <img id="side-img" src="https://ui-avatars.com/api/?name=Elite&background=4f46e5&color=fff" class="user-photo" style="width: 70px; border-radius: 18px; margin-bottom: 10px;">
+        <div id="side-name" style="font-weight: 800;">Candidato</div>
         <div id="role-badge"></div>
     </div>
     <nav>
-        <div class="nav-link active" onclick="showPage('dash-p')"><i class="fas fa-chart-pie"></i> Performance</div>
-        <div class="nav-link" onclick="showPage('rev-p')"><i class="fas fa-history"></i> Revisões</div>
-        <div class="nav-link" onclick="showPage('config-p')"><i class="fas fa-cog"></i> Configurações</div>
+        <div class="nav-link active" onclick="showPage('dash-p')"><i class="fas fa-chart-line"></i> Dashboard</div>
+        <div class="nav-link" onclick="showPage('rev-p')"><i class="fas fa-book-reader"></i> Revisões</div>
+        <div class="nav-link" onclick="showPage('config-p')"><i class="fas fa-sliders-h"></i> Ajustes</div>
     </nav>
-    <div class="admin-only" style="margin-top: auto; padding-top: 15px;">
-        <button class="btn btn-primary" onclick="gerarRelatorioPDF()" style="background: #0ea5e9; margin-bottom: 10px;"><i class="fas fa-file-pdf"></i> PDF</button>
-        <button class="btn btn-danger" onclick="reiniciar()" style="background: #fef2f2; color: #ef4444; border: 1px solid #fee2e2;"><i class="fas fa-trash"></i> ZERAR</button>
+    <div class="admin-only" style="margin-top: auto; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+        <button class="btn" onclick="gerarRelatorioPDF()" style="background: #38bdf8; color: white; margin-bottom: 10px;"><i class="fas fa-print"></i> RELATÓRIO PDF</button>
+        <button class="btn" onclick="reiniciar()" style="background: #ef4444; color: white;"><i class="fas fa-skull"></i> RESET TOTAL</button>
     </div>
 </aside>
 
 <div id="login-screen">
     <div class="login-box">
-        <i class="fas fa-user-lock fa-3x" style="color: var(--primary); margin-bottom: 15px;"></i>
-        <h2>Acesso Elite</h2>
-        <input type="password" id="pass" placeholder="Sua Senha" style="padding: 15px; border: 1.5px solid #e2e8f0; border-radius: 12px; width: 100%; text-align: center; font-size: 1.2rem;">
-        <button class="btn btn-primary" style="margin-top: 20px;" onclick="checkLogin()">ACESSAR</button>
+        <i class="fas fa-university fa-3x" style="color: var(--primary); margin-bottom: 15px;"></i>
+        <h2>Sistema Elite</h2>
+        <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">Área Fiscal e Policial</p>
+        <input type="password" id="pass" placeholder="Senha de Acesso" style="text-align: center; letter-spacing: 3px; font-size: 1.2rem;">
+        <button class="btn btn-primary" style="margin-top: 20px;" onclick="checkLogin()">ENTRAR</button>
+        <small style="display: block; margin-top: 15px; color: #94a3b8;">Mentor: mentoria@elite | Aluno: aluno@elite</small>
     </div>
 </div>
 
 <main class="main-content" id="print-area">
     <div id="dash-p" class="page active">
         <div class="stats-grid">
-            <div class="mini-card"><small>MEDIA</small><h2 id="kpi-media">0%</h2></div>
-            <div class="mini-card"><small>QUESTÕES</small><h2 id="kpi-total">0</h2></div>
-            <div class="mini-card"><small>ACERTOS</small><h2 id="kpi-acertos" style="color: var(--secondary)">0</h2></div>
+            <div class="mini-card"><small>APROVEITAMENTO</small><h2 id="kpi-media" style="color: var(--primary)">0%</h2></div>
+            <div class="mini-card"><small>QUESTÕES TOTAIS</small><h2 id="kpi-total">0</h2></div>
+            <div class="mini-card"><small>ACERTOS TOTAIS</small><h2 id="kpi-acertos" style="color: var(--secondary)">0</h2></div>
         </div>
 
         <div class="card">
-            <h3><i class="fas fa-plus-circle"></i> Nova Sessão</h3>
+            <h3 style="margin-top:0"><i class="fas fa-plus-square" style="color: var(--primary)"></i> Registrar Estudo</h3>
             <div class="form-grid">
-                <select id="selCargo" onchange="atualizarCargo()"><option value="">Cargo</option><option value="Polícia Civil/Federal">PC / PF</option><option value="SEFA-PA (Fiscal)">SEFA-PA</option></select>
+                <select id="selCargo" onchange="atualizarCargo()">
+                    <option value="">Selecione o Foco</option>
+                    <option value="SEFA-PA (Fiscal)">SEFA-PA (Área Fiscal)</option>
+                    <option value="Polícia Civil/Federal">Polícia Civil / Federal</option>
+                </select>
                 <select id="selDisc" onchange="carregarAssuntos()"><option>Disciplina</option></select>
                 <select id="selAssunto"><option>Assunto</option></select>
             </div>
             <div class="form-grid" style="margin-top: 15px;">
-                <input type="number" id="fTotal" placeholder="Total Questões">
-                <input type="number" id="fErr" placeholder="Erros">
-                <button class="btn btn-primary" onclick="salvar()">SALVAR</button>
+                <div><label><small>QTD QUESTÕES</small></label><input type="number" id="fTotal" placeholder="Ex: 15"></div>
+                <div><label><small>QTD ERROS</small></label><input type="number" id="fErr" placeholder="Ex: 2"></div>
+                <div style="display:flex; align-items:flex-end"><button class="btn btn-primary" onclick="salvar()">SALVAR DADOS</button></div>
             </div>
         </div>
 
         <div class="charts-container">
-            <div class="card"><h4>Pontos Fortes</h4><canvas id="radarChart"></canvas></div>
+            <div class="card"><h4>Raio-X de Competência</h4><canvas id="radarChart"></canvas></div>
             <div class="card">
-                <h4>Plano do Mentor</h4>
-                <textarea id="obs-mentor" rows="8" placeholder="Aguardando mentor..."></textarea>
-                <button class="btn admin-only" onclick="salvarObs()" style="background: var(--accent); color: white; margin-top: 10px;">ATUALIZAR PLANO</button>
+                <h4><i class="fas fa-chess-king" style="color: var(--accent)"></i> Estratégia do Mentor</h4>
+                <textarea id="obs-mentor" rows="8" placeholder="Aguardando orientações..."></textarea>
+                <div class="admin-only" style="margin-top:10px; text-align:right">
+                    <button class="btn" onclick="salvarObs()" style="background: var(--accent); color: white; width: auto; display: inline-flex; padding: 10px 20px;">ATUALIZAR PLANO</button>
+                </div>
             </div>
         </div>
     </div>
 
     <div id="rev-p" class="page">
-        <h1>Minhas Revisões</h1>
+        <h1>Histórico e Revisões</h1>
         <div id="rev-list"></div>
     </div>
 
     <div id="config-p" class="page">
-        <h1>Configurar Perfil</h1>
+        <h1>Configurações</h1>
         <div class="card" style="max-width: 500px;">
-            <label>Nome</label><input type="text" id="cfg-nome" onchange="salvarPerfil()">
-            <label style="margin-top:15px; display:block">Avatar URL</label><input type="text" id="cfg-foto" onchange="salvarPerfil()">
+            <label>Nome do Estudante</label><input type="text" id="cfg-nome" onchange="salvarPerfil()">
+            <label style="margin-top:15px; display:block">URL da Foto (Avatar)</label><input type="text" id="cfg-foto" onchange="salvarPerfil()">
         </div>
     </div>
 </main>
@@ -142,30 +143,47 @@
 <script>
     const PASS_MENTOR = "mentoria@elite";
     const PASS_ALUNO = "aluno@elite";
-    
-    // Mesmos dados estruturados de antes
+
+    // --- BANCO DE DADOS HÍBRIDO ATUALIZADO ---
     const editais = {
-        "Polícia Civil/Federal": ["Língua Portuguesa", "Matemática e Raciocínio Lógico", "Direito Constitucional", "Direito Administrativo", "Direito Penal", "Direito Processual Penal", "Legislação Especial", "Arquivologia", "Estatística", "Informática"],
-        "SEFA-PA (Fiscal)": ["Língua Portuguesa", "Direito Constitucional", "Direito Administrativo", "Legislação Tributária (PA)", "Estatística Descritiva", "Matemática Financeira", "Informática"]
+        "SEFA-PA (Fiscal)": [
+            "Língua Portuguesa", "Matemática Financeira", "Raciocínio Lógico", "Estatística",
+            "Administração Pública", "Ética no Serviço Público", "Direito Constitucional",
+            "Direito Administrativo", "Direito Civil", "Direito Empresarial", "Direito Penal",
+            "Direito Tributário", "Tecnologia da Informação", "Legislação Tributária do Estado do Pará",
+            "Contabilidade Geral"
+        ],
+        "Polícia Civil/Federal": [
+            "Língua Portuguesa", "Raciocínio Lógico", "Estatística", "Administração Pública",
+            "Ética no Serviço Público", "Direito Constitucional", "Direito Administrativo",
+            "Direito Penal", "Direito Processual Penal", "Legislação Especial",
+            "Tecnologia da Informação", "Arquivologia"
+        ]
     };
 
     const disciplinas = {
-        "Língua Portuguesa": ["Ortografia", "Acentuação", "Flexão", "Pronomes", "Tempos Verbais", "Concordância", "Regência", "Crase", "Pontuação", "Redação", "Texto"],
-        "Direito Constitucional": ["Direitos Fundamentais", "Adm Pública", "Poder Executivo", "Segurança Pública", "Ordem Social"],
-        "Direito Penal": ["Princípios", "Lei Penal", "Teoria do Crime", "Concurso Pessoas", "Pessoa", "Patrimônio", "Adm Pública"],
-        "Direito Processual Penal": ["Inquérito", "Ação Penal", "Competência", "Provas", "Citações", "Prisão", "Lei 9.099"],
-        "Legislação Especial": ["Abuso Autoridade", "Lei de Drogas", "Interceptação", "Crime Organizado", "Tortura", "Desarmamento", "ECA", "Maria da Penha"],
-        "Matemática e Raciocínio Lógico": ["Conjuntos", "Proporção", "Porcentagem", "PA/PG", "Lógica Sentencial", "Tabelas Verdade", "Probabilidade"],
-        "Matemática Financeira": ["Juros Simples", "Juros Compostos", "Taxas", "Descontos", "Amortização", "TIR"],
-        "Legislação Tributária (PA)": ["ICMS PA", "IPVA/ITCD PA", "Processo Tributário PA"],
-        "Informática": ["Gestão Ágil", "BI/Power BI", "IA", "IoT", "OCR", "Geoprocessamento"],
-        "Direito Administrativo": ["Atos", "Agentes", "Poderes", "Licitações", "Controle"],
-        "Estatística Descritiva": ["Gráficos", "Probabilidades", "Inferência", "Amostragem"],
-        "Arquivologia": ["Princípios", "Protocolo", "Classificação", "Temporalidade", "Preservação"]
+        "Língua Portuguesa": ["Interpretação de Texto", "Tipologia Textual", "Ortografia", "Morfologia", "Sintaxe Período Simples", "Sintaxe Período Composto", "Pontuação", "Concordância", "Regência e Crase", "Semântica"],
+        "Matemática Financeira": ["Juros Simples", "Juros Compostos", "Descontos", "Amortização (SAC/Price)", "VPL e TIR", "Taxas de Juros"],
+        "Raciocínio Lógico": ["Proposições", "Tabela Verdade", "Equivalências Lógicas", "Negações", "Lógica de Argumentação", "Sequências", "Análise Combinatória", "Probabilidade"],
+        "Estatística": ["Estatística Descritiva", "Medidas de Tendência Central", "Medidas de Dispersão", "Probabilidade", "Distribuições", "Amostragem", "Inferência"],
+        "Administração Pública": ["Evolução da Adm. Pública", "Governança e Governabilidade", "Accountability", "Gestão da Qualidade", "Gestão de Processos", "Gestão de Projetos"],
+        "Ética no Serviço Público": ["Ética e Moral", "Código de Ética (Decreto 1.171)", "Lei de Improbidade (8.429)", "Corrupção"],
+        "Direito Constitucional": ["Princípios Fundamentais", "Direitos e Garantias (Art 5º)", "Direitos Sociais", "Nacionalidade", "Organização do Estado", "Poder Executivo", "Poder Legislativo", "Poder Judiciário", "Funções Essenciais"],
+        "Direito Administrativo": ["Princípios (LIMPE)", "Atos Administrativos", "Poderes", "Organização Adm (Desc/Desc)", "Responsabilidade Civil", "Licitações (14.133)", "Agentes Públicos"],
+        "Direito Civil": ["LINDB", "Pessoas Naturais", "Pessoas Jurídicas", "Domicílio", "Bens", "Fatos Jurídicos", "Obrigações", "Contratos", "Responsabilidade Civil"],
+        "Direito Empresarial": ["Teoria da Empresa", "Empresário", "EIRELI/LTDA/SA", "Estabelecimento", "Títulos de Crédito", "Falência e Recuperação"],
+        "Direito Penal": ["Princípios", "Aplicação da Lei Penal", "Teoria do Crime", "Fato Típico", "Ilicitude", "Culpabilidade", "Crimes contra a Pessoa", "Crimes contra o Patrimônio", "Crimes contra a Adm. Pública"],
+        "Direito Processual Penal": ["Inquérito Policial", "Ação Penal", "Competência", "Provas", "Prisões", "Medidas Cautelares"],
+        "Direito Tributário": ["Sistema Tributário Nacional", "Limitações ao Poder de Tributar", "Competência", "Impostos em Espécie", "Obrigação Tributária", "Crédito Tributário", "Administração Tributária"],
+        "Tecnologia da Informação": ["Banco de Dados", "SQL", "Segurança da Informação", "Redes de Computadores", "Governança de TI (COBIT/ITIL)", "Engenharia de Software", "Python/R (Básico)"],
+        "Legislação Tributária do Estado do Pará": ["ICMS PA", "IPVA PA", "ITCD PA", "PAT (Processo Adm Tributário)"],
+        "Contabilidade Geral": ["Conceitos Básicos", "Patrimônio", "Escrituração", "Balancete", "Balanço Patrimonial", "DRE", "DFC", "DVA", "CPCs Básicos"],
+        "Legislação Especial": ["Lei de Drogas", "Abuso de Autoridade", "Maria da Penha", "Estatuto do Desarmamento", "Organização Criminosa"],
+        "Arquivologia": ["Conceitos", "Gestão de Documentos", "Ciclo Vital", "Protocolo", "Preservação"]
     };
 
-    let dados = JSON.parse(localStorage.getItem('elite_v7_dados')) || [];
-    let perfil = JSON.parse(localStorage.getItem('elite_v7_perfil')) || { nome: "Estudante", foto: "", cargo: "", obs: "" };
+    let dados = JSON.parse(localStorage.getItem('elite_gold_dados')) || [];
+    let perfil = JSON.parse(localStorage.getItem('elite_gold_perfil')) || { nome: "Estudante", foto: "", cargo: "", obs: "" };
     let chartRadar;
 
     function checkLogin() {
@@ -174,21 +192,17 @@
             document.getElementById('login-screen').style.display = 'none';
             if(pass === PASS_MENTOR) {
                 document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
-                document.getElementById('role-badge').innerHTML = '<span style="background:var(--accent); font-size:10px; padding:2px 5px; border-radius:5px">MENTOR</span>';
+                document.getElementById('role-badge').innerHTML = '<span style="background:var(--accent); color:white; font-size:10px; padding:3px 8px; border-radius:5px">MENTOR</span>';
                 document.getElementById('obs-mentor').disabled = false;
             } else {
                 document.getElementById('obs-mentor').disabled = true;
             }
             init();
-        } else { alert("Senha Errada!"); }
+        } else { alert("Senha incorreta!"); }
     }
 
     function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
-
-    function init() {
-        document.getElementById('obs-mentor').value = perfil.obs || "";
-        render();
-    }
+    function init() { document.getElementById('obs-mentor').value = perfil.obs || ""; render(); }
 
     function atualizarCargo() {
         const c = document.getElementById('selCargo').value;
@@ -196,8 +210,7 @@
         sd.innerHTML = '<option value="">Disciplina</option>';
         if(c) {
             editais[c].forEach(d => sd.innerHTML += `<option value="${d}">${d}</option>`);
-            perfil.cargo = c;
-            salvarPerfil();
+            perfil.cargo = c; salvarPerfil();
         }
     }
 
@@ -220,22 +233,22 @@
     function salvarPerfil() {
         perfil.nome = document.getElementById('cfg-nome').value || perfil.nome;
         perfil.foto = document.getElementById('cfg-foto').value || perfil.foto;
-        localStorage.setItem('elite_v7_perfil', JSON.stringify(perfil));
+        localStorage.setItem('elite_gold_perfil', JSON.stringify(perfil));
         document.getElementById('side-name').innerText = perfil.nome;
         if(perfil.foto) document.getElementById('side-img').src = perfil.foto;
     }
 
     function salvarObs() {
         perfil.obs = document.getElementById('obs-mentor').value;
-        localStorage.setItem('elite_v7_perfil', JSON.stringify(perfil));
-        alert("Plano Salvo!");
+        localStorage.setItem('elite_gold_perfil', JSON.stringify(perfil));
+        alert("Plano estratégico atualizado!");
     }
 
     function salvar() {
         const total = parseInt(document.getElementById('fTotal').value) || 0;
         const erros = parseInt(document.getElementById('fErr').value) || 0;
         const acertos = total - erros;
-        if(total <= 0 || acertos < 0) return alert("Erro nos dados!");
+        if(total <= 0 || acertos < 0) return alert("Verifique os números!");
         
         dados.push({
             data: new Date().toLocaleDateString('pt-BR'),
@@ -243,7 +256,7 @@
             topico: document.getElementById('selAssunto').value,
             total: total, acertos: acertos, dataIso: new Date().toISOString()
         });
-        localStorage.setItem('elite_v7_dados', JSON.stringify(dados));
+        localStorage.setItem('elite_gold_dados', JSON.stringify(dados));
         render();
     }
 
@@ -266,7 +279,7 @@
         if(chartRadar) chartRadar.destroy();
         chartRadar = new Chart(document.getElementById('radarChart'), {
             type: 'radar',
-            data: { labels: labels, datasets: [{ label: '%', data: scores, backgroundColor: 'rgba(99,102,241,0.2)', borderColor: '#6366f1' }] },
+            data: { labels: labels, datasets: [{ label: '% Acerto', data: scores, backgroundColor: 'rgba(79, 70, 229, 0.2)', borderColor: '#4f46e5', pointBackgroundColor: '#4f46e5' }] },
             options: { scales: { r: { min: 0, max: 100, ticks: { display: false } } } }
         });
     }
@@ -275,9 +288,11 @@
         const list = document.getElementById('rev-list');
         list.innerHTML = '';
         dados.slice().reverse().forEach(s => {
-            list.innerHTML += `<div style="padding:15px; background:white; border-radius:12px; margin-bottom:10px; border-left:5px solid var(--primary); display:flex; justify-content:space-between">
-                <span><b>${s.materia}</b><br>${s.topico}</span>
-                <span style="text-align:right"><b>${s.data}</b><br>${((s.acertos/s.total)*100).toFixed(0)}%</span>
+            const perc = ((s.acertos/s.total)*100).toFixed(0);
+            let cor = perc >= 80 ? '#10b981' : (perc >= 60 ? '#f59e0b' : '#ef4444');
+            list.innerHTML += `<div style="padding:15px; background:white; border-radius:12px; margin-bottom:10px; border-left:5px solid ${cor}; display:flex; justify-content:space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                <div><strong>${s.materia}</strong><br><small style="color:#64748b">${s.topico}</small></div>
+                <div style="text-align:right"><b style="color:#64748b">${s.data}</b><br><span style="color:${cor}; font-weight:800; font-size:1.1rem">${perc}%</span></div>
             </div>`;
         });
     }
@@ -286,12 +301,15 @@
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF('p', 'pt', 'a4');
         html2canvas(document.getElementById('print-area')).then(canvas => {
-            doc.addImage(canvas.toDataURL('image/png'), 'PNG', 20, 20, 550, 400);
-            doc.save(`Relatorio_Elite.pdf`);
+            const imgData = canvas.toDataURL('image/png');
+            const pdfWidth = doc.internal.pageSize.getWidth();
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+            doc.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            doc.save(`Relatorio_Elite_${perfil.nome}.pdf`);
         });
     }
 
-    function reiniciar() { if(confirm("Apagar tudo?")) { localStorage.clear(); location.reload(); } }
+    function reiniciar() { if(confirm("Tem certeza absoluta? Isso apagará todo o progresso.")) { localStorage.clear(); location.reload(); } }
 </script>
 </body>
 </html>
