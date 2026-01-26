@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elite Mentor | Sistema Híbrido (Fiscal & Policial)</title>
+    <title>Elite Mentor | Sistema Multi-Carreiras</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -38,7 +38,6 @@
         
         .btn { padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; font-size: 0.9rem; letter-spacing: 0.5px; text-transform: uppercase; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { filter: brightness(1.1); }
         .admin-only { display: none; }
 
         @media (max-width: 1024px) { .charts-container { grid-template-columns: 1fr; } }
@@ -56,7 +55,7 @@
 <body>
 
 <header class="mobile-header">
-    <div style="font-weight: 800; font-size: 1.2rem;"><i class="fas fa-shield-alt"></i> Elite Híbrido</div>
+    <div style="font-weight: 800; font-size: 1.2rem;"><i class="fas fa-shield-alt"></i> Elite V2</div>
     <button onclick="toggleMenu()" style="background: none; border: none; color: white; font-size: 1.5rem;"><i class="fas fa-bars"></i></button>
 </header>
 
@@ -79,11 +78,11 @@
 
 <div id="login-screen">
     <div class="login-box">
-        <i class="fas fa-university fa-3x" style="color: var(--primary); margin-bottom: 15px;"></i>
-        <h2>Sistema Elite</h2>
-        <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">Área Fiscal e Policial</p>
+        <i class="fas fa-layer-group fa-3x" style="color: var(--primary); margin-bottom: 15px;"></i>
+        <h2>Sistema Elite V2</h2>
+        <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">Gestão de Multi-Carreiras</p>
         <input type="password" id="pass" placeholder="Senha de Acesso" style="text-align: center; letter-spacing: 3px; font-size: 1.2rem;">
-        <button class="btn btn-primary" style="margin-top: 20px;" onclick="checkLogin()">ENTRAR</button>
+        <button class="btn btn-primary" style="margin-top: 20px;" onclick="checkLogin()">ACESSAR</button>
         <small style="display: block; margin-top: 15px; color: #94a3b8;">Mentor: mentoria@elite | Aluno: aluno@elite</small>
     </div>
 </div>
@@ -100,9 +99,10 @@
             <h3 style="margin-top:0"><i class="fas fa-plus-square" style="color: var(--primary)"></i> Registrar Estudo</h3>
             <div class="form-grid">
                 <select id="selCargo" onchange="atualizarCargo()">
-                    <option value="">Selecione o Foco</option>
+                    <option value="">Selecione o Edital</option>
                     <option value="SEFA-PA (Fiscal)">SEFA-PA (Área Fiscal)</option>
-                    <option value="Polícia Civil/Federal">Polícia Civil / Federal</option>
+                    <option value="Polícia Federal">Polícia Federal (PF)</option>
+                    <option value="Polícia Civil do Pará">Polícia Civil do Pará (PC-PA)</option>
                 </select>
                 <select id="selDisc" onchange="carregarAssuntos()"><option>Disciplina</option></select>
                 <select id="selAssunto"><option>Assunto</option></select>
@@ -135,181 +135,4 @@
         <h1>Configurações</h1>
         <div class="card" style="max-width: 500px;">
             <label>Nome do Estudante</label><input type="text" id="cfg-nome" onchange="salvarPerfil()">
-            <label style="margin-top:15px; display:block">URL da Foto (Avatar)</label><input type="text" id="cfg-foto" onchange="salvarPerfil()">
-        </div>
-    </div>
-</main>
-
-<script>
-    const PASS_MENTOR = "mentoria@elite";
-    const PASS_ALUNO = "aluno@elite";
-
-    // --- BANCO DE DADOS HÍBRIDO ATUALIZADO ---
-    const editais = {
-        "SEFA-PA (Fiscal)": [
-            "Língua Portuguesa", "Matemática Financeira", "Raciocínio Lógico", "Estatística",
-            "Administração Pública", "Ética no Serviço Público", "Direito Constitucional",
-            "Direito Administrativo", "Direito Civil", "Direito Empresarial", "Direito Penal",
-            "Direito Tributário", "Tecnologia da Informação", "Legislação Tributária do Estado do Pará",
-            "Contabilidade Geral"
-        ],
-        "Polícia Civil/Federal": [
-            "Língua Portuguesa", "Raciocínio Lógico", "Estatística", "Administração Pública",
-            "Ética no Serviço Público", "Direito Constitucional", "Direito Administrativo",
-            "Direito Penal", "Direito Processual Penal", "Legislação Especial",
-            "Tecnologia da Informação", "Arquivologia"
-        ]
-    };
-
-    const disciplinas = {
-        "Língua Portuguesa": ["Interpretação de Texto", "Tipologia Textual", "Ortografia", "Morfologia", "Sintaxe Período Simples", "Sintaxe Período Composto", "Pontuação", "Concordância", "Regência e Crase", "Semântica"],
-        "Matemática Financeira": ["Juros Simples", "Juros Compostos", "Descontos", "Amortização (SAC/Price)", "VPL e TIR", "Taxas de Juros"],
-        "Raciocínio Lógico": ["Proposições", "Tabela Verdade", "Equivalências Lógicas", "Negações", "Lógica de Argumentação", "Sequências", "Análise Combinatória", "Probabilidade"],
-        "Estatística": ["Estatística Descritiva", "Medidas de Tendência Central", "Medidas de Dispersão", "Probabilidade", "Distribuições", "Amostragem", "Inferência"],
-        "Administração Pública": ["Evolução da Adm. Pública", "Governança e Governabilidade", "Accountability", "Gestão da Qualidade", "Gestão de Processos", "Gestão de Projetos"],
-        "Ética no Serviço Público": ["Ética e Moral", "Código de Ética (Decreto 1.171)", "Lei de Improbidade (8.429)", "Corrupção"],
-        "Direito Constitucional": ["Princípios Fundamentais", "Direitos e Garantias (Art 5º)", "Direitos Sociais", "Nacionalidade", "Organização do Estado", "Poder Executivo", "Poder Legislativo", "Poder Judiciário", "Funções Essenciais"],
-        "Direito Administrativo": ["Princípios (LIMPE)", "Atos Administrativos", "Poderes", "Organização Adm (Desc/Desc)", "Responsabilidade Civil", "Licitações (14.133)", "Agentes Públicos"],
-        "Direito Civil": ["LINDB", "Pessoas Naturais", "Pessoas Jurídicas", "Domicílio", "Bens", "Fatos Jurídicos", "Obrigações", "Contratos", "Responsabilidade Civil"],
-        "Direito Empresarial": ["Teoria da Empresa", "Empresário", "EIRELI/LTDA/SA", "Estabelecimento", "Títulos de Crédito", "Falência e Recuperação"],
-        "Direito Penal": ["Princípios", "Aplicação da Lei Penal", "Teoria do Crime", "Fato Típico", "Ilicitude", "Culpabilidade", "Crimes contra a Pessoa", "Crimes contra o Patrimônio", "Crimes contra a Adm. Pública"],
-        "Direito Processual Penal": ["Inquérito Policial", "Ação Penal", "Competência", "Provas", "Prisões", "Medidas Cautelares"],
-        "Direito Tributário": ["Sistema Tributário Nacional", "Limitações ao Poder de Tributar", "Competência", "Impostos em Espécie", "Obrigação Tributária", "Crédito Tributário", "Administração Tributária"],
-        "Tecnologia da Informação": ["Banco de Dados", "SQL", "Segurança da Informação", "Redes de Computadores", "Governança de TI (COBIT/ITIL)", "Engenharia de Software", "Python/R (Básico)"],
-        "Legislação Tributária do Estado do Pará": ["ICMS PA", "IPVA PA", "ITCD PA", "PAT (Processo Adm Tributário)"],
-        "Contabilidade Geral": ["Conceitos Básicos", "Patrimônio", "Escrituração", "Balancete", "Balanço Patrimonial", "DRE", "DFC", "DVA", "CPCs Básicos"],
-        "Legislação Especial": ["Lei de Drogas", "Abuso de Autoridade", "Maria da Penha", "Estatuto do Desarmamento", "Organização Criminosa"],
-        "Arquivologia": ["Conceitos", "Gestão de Documentos", "Ciclo Vital", "Protocolo", "Preservação"]
-    };
-
-    let dados = JSON.parse(localStorage.getItem('elite_gold_dados')) || [];
-    let perfil = JSON.parse(localStorage.getItem('elite_gold_perfil')) || { nome: "Estudante", foto: "", cargo: "", obs: "" };
-    let chartRadar;
-
-    function checkLogin() {
-        const pass = document.getElementById('pass').value;
-        if(pass === PASS_MENTOR || pass === PASS_ALUNO) {
-            document.getElementById('login-screen').style.display = 'none';
-            if(pass === PASS_MENTOR) {
-                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
-                document.getElementById('role-badge').innerHTML = '<span style="background:var(--accent); color:white; font-size:10px; padding:3px 8px; border-radius:5px">MENTOR</span>';
-                document.getElementById('obs-mentor').disabled = false;
-            } else {
-                document.getElementById('obs-mentor').disabled = true;
-            }
-            init();
-        } else { alert("Senha incorreta!"); }
-    }
-
-    function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
-    function init() { document.getElementById('obs-mentor').value = perfil.obs || ""; render(); }
-
-    function atualizarCargo() {
-        const c = document.getElementById('selCargo').value;
-        const sd = document.getElementById('selDisc');
-        sd.innerHTML = '<option value="">Disciplina</option>';
-        if(c) {
-            editais[c].forEach(d => sd.innerHTML += `<option value="${d}">${d}</option>`);
-            perfil.cargo = c; salvarPerfil();
-        }
-    }
-
-    function carregarAssuntos() {
-        const d = document.getElementById('selDisc').value;
-        const sa = document.getElementById('selAssunto');
-        sa.innerHTML = '<option value="">Assunto</option>';
-        if(d && disciplinas[d]) disciplinas[d].forEach(a => sa.innerHTML += `<option value="${a}">${a}</option>`);
-    }
-
-    function showPage(id) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        if(window.innerWidth < 768) toggleMenu();
-        if(id === 'dash-p') render();
-        if(id === 'rev-p') renderRevisoes();
-    }
-
-    function salvarPerfil() {
-        perfil.nome = document.getElementById('cfg-nome').value || perfil.nome;
-        perfil.foto = document.getElementById('cfg-foto').value || perfil.foto;
-        localStorage.setItem('elite_gold_perfil', JSON.stringify(perfil));
-        document.getElementById('side-name').innerText = perfil.nome;
-        if(perfil.foto) document.getElementById('side-img').src = perfil.foto;
-    }
-
-    function salvarObs() {
-        perfil.obs = document.getElementById('obs-mentor').value;
-        localStorage.setItem('elite_gold_perfil', JSON.stringify(perfil));
-        alert("Plano estratégico atualizado!");
-    }
-
-    function salvar() {
-        const total = parseInt(document.getElementById('fTotal').value) || 0;
-        const erros = parseInt(document.getElementById('fErr').value) || 0;
-        const acertos = total - erros;
-        if(total <= 0 || acertos < 0) return alert("Verifique os números!");
-        
-        dados.push({
-            data: new Date().toLocaleDateString('pt-BR'),
-            materia: document.getElementById('selDisc').value,
-            topico: document.getElementById('selAssunto').value,
-            total: total, acertos: acertos, dataIso: new Date().toISOString()
-        });
-        localStorage.setItem('elite_gold_dados', JSON.stringify(dados));
-        render();
-    }
-
-    function render() {
-        salvarPerfil();
-        const tQ = dados.reduce((a, b) => a + b.total, 0);
-        const tA = dados.reduce((a, b) => a + b.acertos, 0);
-        document.getElementById('kpi-media').innerText = tQ > 0 ? ((tA/tQ)*100).toFixed(0) + "%" : "0%";
-        document.getElementById('kpi-total').innerText = tQ;
-        document.getElementById('kpi-acertos').innerText = tA;
-        
-        const mData = {};
-        dados.forEach(d => {
-            if(!mData[d.materia]) mData[d.materia] = {a:0, t:0};
-            mData[d.materia].a += d.acertos; mData[d.materia].t += d.total;
-        });
-        const labels = Object.keys(mData);
-        const scores = labels.map(l => (mData[l].a / mData[l].t * 100).toFixed(0));
-
-        if(chartRadar) chartRadar.destroy();
-        chartRadar = new Chart(document.getElementById('radarChart'), {
-            type: 'radar',
-            data: { labels: labels, datasets: [{ label: '% Acerto', data: scores, backgroundColor: 'rgba(79, 70, 229, 0.2)', borderColor: '#4f46e5', pointBackgroundColor: '#4f46e5' }] },
-            options: { scales: { r: { min: 0, max: 100, ticks: { display: false } } } }
-        });
-    }
-
-    function renderRevisoes() {
-        const list = document.getElementById('rev-list');
-        list.innerHTML = '';
-        dados.slice().reverse().forEach(s => {
-            const perc = ((s.acertos/s.total)*100).toFixed(0);
-            let cor = perc >= 80 ? '#10b981' : (perc >= 60 ? '#f59e0b' : '#ef4444');
-            list.innerHTML += `<div style="padding:15px; background:white; border-radius:12px; margin-bottom:10px; border-left:5px solid ${cor}; display:flex; justify-content:space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-                <div><strong>${s.materia}</strong><br><small style="color:#64748b">${s.topico}</small></div>
-                <div style="text-align:right"><b style="color:#64748b">${s.data}</b><br><span style="color:${cor}; font-weight:800; font-size:1.1rem">${perc}%</span></div>
-            </div>`;
-        });
-    }
-
-    async function gerarRelatorioPDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF('p', 'pt', 'a4');
-        html2canvas(document.getElementById('print-area')).then(canvas => {
-            const imgData = canvas.toDataURL('image/png');
-            const pdfWidth = doc.internal.pageSize.getWidth();
-            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-            doc.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-            doc.save(`Relatorio_Elite_${perfil.nome}.pdf`);
-        });
-    }
-
-    function reiniciar() { if(confirm("Tem certeza absoluta? Isso apagará todo o progresso.")) { localStorage.clear(); location.reload(); } }
-</script>
-</body>
-</html>
+            <label style="margin-top:15px; display:block">URL da Foto (Avatar)</label><input type="text"
