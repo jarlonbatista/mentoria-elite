@@ -83,8 +83,8 @@
         </div>
         <h2>Acesso Elite V4</h2>
         <p style="color: #64748b; margin-bottom: 25px;">Selecione seu perfil de acesso</p>
-        <input type="password" id="pass" placeholder="Senha" style="text-align: center; font-size: 1.2rem; letter-spacing: 2px;">
-        <button class="btn btn-primary" onclick="checkLogin()">ENTRAR</button>
+        <input type="password" id="senha" placeholder="Digite sua senha" style="text-align: center; font-size: 1.2rem; letter-spacing: 2px;">
+        <button id="btn-login">ENTRAR</button>
         <div style="margin-top: 15px; font-size: 0.8rem; color: #94a3b8;">Admin: mentoria@elite | Aluno: aluno@elite</div>
     </div>
 </div>
@@ -201,8 +201,27 @@
 </main>
 
 <script>
-    const PASS_MENTOR = "mentoria@elite";
-    const PASS_ALUNO = "aluno@elite";
+const campoSenha = document.getElementById("senha");
+const btnLogin = document.getElementById("btn-login");
+
+// 1. Escuta a tecla Enter
+campoSenha.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+        login(); // Chama a sua função de login
+    }
+});
+
+// 2. Função de Login com salvamento de progresso (Exemplo de lógica)
+function login() {
+    const senha = campoSenha.value;
+    // Aqui vai sua lógica de validação...
+    
+    // Simulação de carregar progresso do banco de dados
+    const progressoSalvo = localStorage.getItem("progresso_estudo");
+    if (progressoSalvo) {
+        renderizarEstudos(JSON.parse(progressoSalvo));
+    }
+}
 
     // --- SEPARAÇÃO ESTRITA DOS EDITAIS ---
     const editais = {
@@ -437,3 +456,4 @@
 </script>
 </body>
 </html>
+
