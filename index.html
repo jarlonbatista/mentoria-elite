@@ -1,37 +1,439 @@
-// --- LÓGICA DE LOGIN ATUALIZADA ---
-    function checkLogin() {
-        const pass = document.getElementById('pass').value;
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elite Mentor | Sistema V4</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root { --primary: #4f46e5; --secondary: #10b981; --danger: #ef4444; --dark: #0f172a; --bg: #f8fafc; --text: #334155; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; color: var(--text); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
+
+        /* Login */
+        #login-screen { position: fixed; inset: 0; background: var(--dark); display: flex; align-items: center; justify-content: center; z-index: 5000; padding: 20px; }
+        .login-box { background: white; padding: 40px; border-radius: 24px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+
+        /* Layout */
+        .mobile-header { display: none; background: #1e293b; color: white; padding: 15px; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 2000; }
         
-        // Simulação de autenticação (Pode ser substituída por Firebase Auth)
-        if(pass === PASS_MENTOR || pass === PASS_ALUNO) {
-            document.getElementById('login-screen').style.display = 'none';
+        /* CORREÇÃO DO SIDEBAR (SCROLL) */
+        .sidebar { 
+            width: 280px; 
+            background: #1e293b; 
+            color: white; 
+            height: 100vh; 
+            position: fixed; 
+            padding: 25px; 
+            display: flex; 
+            flex-direction: column; 
+            z-index: 3000; 
+            transition: 0.3s;
+            overflow-y: auto; /* Permite rolar se a tela for pequena */
+        }
+        
+        /* Estilizando a barra de rolagem do menu para ficar bonita */
+        .sidebar::-webkit-scrollbar { width: 6px; }
+        .sidebar::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+
+        .main-content { margin-left: 280px; padding: 40px; width: calc(100% - 280px); }
+
+        /* Componentes */
+        .card { background: white; padding: 25px; border-radius: 20px; border: 1px solid #e2e8f0; margin-bottom: 25px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
+        .mini-card { background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; text-align: center; }
+        
+        .result-box {
+            background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; 
+            padding: 15px; border-radius: 12px; margin-top: 15px; 
+            text-align: center; font-weight: 700; display: none;
+        }
+
+        input, select, textarea { padding: 12px; border: 1.5px solid #cbd5e1; border-radius: 10px; margin-top: 5px; width: 100%; font-size: 0.95rem; }
+        input:focus, select:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+        
+        .btn { padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; width: 100%; margin-top: 10px; transition: 0.2s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: #4338ca; }
+        
+        /* Elementos de Admin - IMPORTANTE */
+        .admin-only { display: none; margin-top: 20px; padding-bottom: 20px; } 
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .mobile-header { display: flex; }
+            .sidebar { left: -100%; width: 260px; height: calc(100vh - 60px); top: 60px; } /* Ajuste altura mobile */
+            .sidebar.active { left: 0; }
+            .main-content { margin-left: 0; width: 100%; padding: 20px; }
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="login-screen">
+    <div class="login-box">
+        <div style="background: var(--primary); width: 60px; height: 60px; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+            <i class="fas fa-fingerprint fa-2x" style="color: white;"></i>
+        </div>
+        <h2>Acesso Elite V4</h2>
+        <p style="color: #64748b; margin-bottom: 25px;">Selecione seu perfil de acesso</p>
+        <input type="password" id="pass" placeholder="Senha" style="text-align: center; font-size: 1.2rem; letter-spacing: 2px;">
+        <button class="btn btn-primary" onclick="checkLogin()">ENTRAR</button>
+        <div style="margin-top: 15px; font-size: 0.8rem; color: #94a3b8;">Admin: mentoria@elite | Aluno: aluno@elite</div>
+    </div>
+</div>
+
+<header class="mobile-header">
+    <strong>Elite Mentor</strong>
+    <button onclick="document.getElementById('sidebar').classList.toggle('active')" style="background:none; border:none; color:white; font-size:1.5rem"><i class="fas fa-bars"></i></button>
+</header>
+
+<aside class="sidebar" id="sidebar">
+    <div style="text-align: center; margin-bottom: 20px;">
+        <img id="side-img" src="https://ui-avatars.com/api/?name=Elite&background=4f46e5&color=fff" style="width: 80px; border-radius: 20px; margin-bottom: 10px;">
+        <h4 id="side-name" style="margin:0">Visitante</h4>
+        <small id="role-badge" style="opacity: 0.7;">...</small>
+    </div>
+    
+    <nav style="flex-grow: 1;">
+        <div onclick="showPage('dash-p')" style="padding: 12px; cursor: pointer; color: white; display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-chart-pie"></i> Dashboard
+        </div>
+        <div onclick="showPage('rev-p')" style="padding: 12px; cursor: pointer; color: #94a3b8; display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-list-ul"></i> Revisões
+        </div>
+        <div onclick="showPage('config-p')" style="padding: 12px; cursor: pointer; color: #94a3b8; display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-cog"></i> Configurar
+        </div>
+    </nav>
+
+    <div class="admin-only">
+        <hr style="border-color: rgba(255,255,255,0.1); margin: 15px 0;">
+        <button class="btn" onclick="gerarRelatorioPDF()" style="background: #0ea5e9; color: white;">
+            <i class="fas fa-file-pdf"></i> RELATÓRIO
+        </button>
+        <button class="btn" onclick="resetarDados()" style="background: #ef4444; color: white; margin-top: 10px;">
+            <i class="fas fa-trash"></i> ZERAR DADOS
+        </button>
+        <div style="font-size: 0.7rem; color: #94a3b8; text-align: center; margin-top: 10px;">
+            Acesso MENTOR Ativo
+        </div>
+    </div>
+</aside>
+
+<main class="main-content" id="print-area">
+    
+    <div id="dash-p" class="page">
+        <div class="stats-grid">
+            <div class="mini-card"><small>DESEMPENHO GLOBAL</small><h2 id="kpi-media" style="color: var(--primary)">0%</h2></div>
+            <div class="mini-card"><small>QUESTÕES FEITAS</small><h2 id="kpi-total">0</h2></div>
+            <div class="mini-card"><small>ACERTOS TOTAIS</small><h2 id="kpi-acertos" style="color: var(--secondary)">0</h2></div>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-top:0"><i class="fas fa-pen-alt"></i> Novo Registro</h3>
             
-            if(pass === PASS_MENTOR) {
-                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
-                document.getElementById('role-badge').innerHTML = '<span style="background:var(--accent); color:white; font-size:10px; padding:3px 8px; border-radius:5px">MENTOR</span>';
+            <div style="margin-bottom: 15px;">
+                <label style="font-weight: 700; font-size: 0.9rem;">SELECIONE O EDITAL</label>
+                <select id="selCargo" onchange="atualizarCargo()" style="background: #f1f5f9; font-weight: 600;">
+                    <option value="">Selecione a Carreira...</option>
+                    <option value="SEFA-PA">SEFA-PA (Área Fiscal)</option>
+                    <option value="PF">Polícia Federal (PF)</option>
+                    <option value="PC-PA">Polícia Civil do Pará (PC-PA)</option>
+                </select>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                <select id="selDisc" onchange="carregarAssuntos()"><option>Disciplina</option></select>
+                <select id="selAssunto"><option>Assunto</option></select>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div>
+                    <label><small>TOTAL DE QUESTÕES</small></label>
+                    <input type="number" id="fTotal" placeholder="Ex: 10" oninput="calcularAoVivo()">
+                </div>
+                <div>
+                    <label><small>QUANTIDADE DE ERROS</small></label>
+                    <input type="number" id="fErr" placeholder="Ex: 3" oninput="calcularAoVivo()">
+                </div>
+            </div>
+
+            <div id="live-calc" class="result-box">
+                <i class="fas fa-check-circle"></i> Resultado: <span id="txt-acertos">0</span> Acertos (<span id="txt-perc">0%</span>)
+            </div>
+
+            <button class="btn btn-primary" onclick="salvar()">REGISTRAR SESSÃO</button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="card">
+                <h4>Raio-X do Edital</h4>
+                <canvas id="radarChart"></canvas>
+            </div>
+            <div class="card">
+                <h4><i class="fas fa-user-graduate"></i> Plano do Mentor</h4>
+                <textarea id="obs-mentor" rows="8" placeholder="Orientações do mentor aparecerão aqui..."></textarea>
+                <button class="btn admin-only" style="background: var(--secondary); color: white;" onclick="salvarObs()">ATUALIZAR PLANO</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="rev-p" class="page" style="display: none;">
+        <h2>Histórico de Estudos</h2>
+        <div id="rev-list"></div>
+    </div>
+
+    <div id="config-p" class="page" style="display: none;">
+        <h2>Perfil</h2>
+        <div class="card">
+            <label>Nome</label><input id="cfg-nome" onchange="salvarPerfil()">
+            <label>Link Foto</label><input id="cfg-foto" onchange="salvarPerfil()">
+        </div>
+    </div>
+
+</main>
+
+<script>
+    const PASS_MENTOR = "mentoria@elite";
+    const PASS_ALUNO = "aluno@elite";
+
+    // --- SEPARAÇÃO ESTRITA DOS EDITAIS ---
+    const editais = {
+        "SEFA-PA": [
+            "Língua Portuguesa", "Matemática Financeira", "Raciocínio Lógico", "Estatística",
+            "Direito Constitucional", "Direito Administrativo", "Direito Tributário", 
+            "Legislação Tributária PA", "Contabilidade Geral", "Auditoria Fiscal",
+            "Direito Civil", "Direito Empresarial", "Economia", "TI (Fiscal)"
+        ],
+        "PF": [
+            "Língua Portuguesa", "Direito Administrativo", "Direito Constitucional",
+            "Direito Penal", "Direito Processual Penal", "Legislação Especial",
+            "Estatística (Avançada)", "Raciocínio Lógico", "Informática (TI)", 
+            "Contabilidade Geral (Avançada)", "Direitos Humanos"
+        ],
+        "PC-PA": [
+            "Língua Portuguesa", "Raciocínio Lógico", "Noções de Informática",
+            "Conhecimentos do Pará", "Direito Administrativo", "Direito Constitucional",
+            "Direito Penal", "Direito Processual Penal", "Legislação Especial", 
+            "Arquivologia", "Noções de Estatística"
+        ]
+    };
+
+    const disciplinas = {
+        // COMUNS
+        "Língua Portuguesa": ["Interpretação", "Gramática", "Sintaxe", "Morfologia"],
+        "Raciocínio Lógico": ["Lógica Proposicional", "Argumentação", "Sequências"],
+        "Direito Constitucional": ["Direitos Fundamentais", "Poderes", "Organização do Estado"],
+        "Direito Administrativo": ["Atos", "Poderes", "Responsabilidade Civil", "Licitações"],
+        "Direito Penal": ["Teoria do Crime", "Penas", "Crimes em Espécie"],
+        "Direito Processual Penal": ["Inquérito", "Ação Penal", "Prisões"],
+        "Legislação Especial": ["Lei de Drogas", "Maria da Penha", "Abuso de Autoridade"],
+        
+        // ESPECÍFICAS PF
+        "Contabilidade Geral (Avançada)": ["CPC 00", "Balanço Patrimonial", "DRE", "Análise de Balanços"],
+        "Informática (TI)": ["Banco de Dados", "Python/R", "Redes", "Segurança da Informação"],
+        "Estatística (Avançada)": ["Probabilidade", "Distribuições", "Inferência", "Regressão"],
+        "Direitos Humanos": ["Teoria Geral", "Tratados Internacionais", "PNDH-3"],
+
+        // ESPECÍFICAS PC-PA
+        "Conhecimentos do Pará": ["História do Pará", "Geografia do Pará", "Atualidades Regionais"],
+        "Arquivologia": ["Gestão de Documentos", "Ciclo Vital", "Preservação"],
+        "Noções de Informática": ["Windows", "Word/Excel", "Navegadores", "Segurança Básica"],
+        "Noções de Estatística": ["Média", "Moda", "Mediana", "Desvio Padrão"],
+
+        // ESPECÍFICAS SEFA
+        "Direito Tributário": ["Sistema Tributário Nacional", "CTN", "Obrigação e Crédito"],
+        "Legislação Tributária PA": ["ICMS-PA", "IPVA-PA", "ITCD-PA", "Processo Adm. Fiscal"],
+        "Matemática Financeira": ["Juros Simples/Compostos", "Amortização", "VPL/TIR"],
+        "Auditoria Fiscal": ["Normas de Auditoria", "Procedimentos", "Relatórios"],
+        "Contabilidade Geral": ["Escrituração", "Demonstrações Contábeis"],
+        "Direito Civil": ["Pessoas", "Bens", "Contratos"],
+        "Direito Empresarial": ["Empresário", "Sociedades", "Falência"],
+        "Economia": ["Microeconomia", "Macroeconomia"],
+        "TI (Fiscal)": ["Banco de Dados SQL", "Governança de TI", "Segurança"]
+    };
+
+    let dados = JSON.parse(localStorage.getItem('elite_v4_dados')) || [];
+    let perfil = JSON.parse(localStorage.getItem('elite_v4_perfil')) || { nome: "Estudante", foto: "", cargo: "", obs: "" };
+    let chartRadar;
+
+    function checkLogin() {
+        const p = document.getElementById('pass').value;
+        if(p === PASS_MENTOR || p === PASS_ALUNO) {
+            document.getElementById('login-screen').style.display = 'none';
+            if(p === PASS_MENTOR) {
+                document.querySelectorAll('.admin-only').forEach(e => e.style.display = 'block');
                 document.getElementById('obs-mentor').disabled = false;
+                document.getElementById('role-badge').innerText = "MENTOR";
+                document.getElementById('role-badge').style.background = "#f59e0b";
             } else {
                 document.getElementById('obs-mentor').disabled = true;
+                document.getElementById('role-badge').innerText = "ALUNO";
             }
-            
-            // Sincronizar dados ao entrar
-            sincronizarDados();
             init();
-        } else { 
-            alert("Senha incorreta!"); 
+        } else { alert("Senha inválida"); }
+    }
+
+    function init() {
+        document.getElementById('obs-mentor').value = perfil.obs || "";
+        render();
+    }
+
+    function atualizarCargo() {
+        const c = document.getElementById('selCargo').value;
+        const sd = document.getElementById('selDisc');
+        sd.innerHTML = '<option value="">Disciplina</option>';
+        if(c && editais[c]) {
+            editais[c].forEach(d => sd.innerHTML += `<option value="${d}">${d}</option>`);
+            perfil.cargo = c; salvarPerfil();
         }
     }
 
-    // ALTERAÇÃO: Evento para apertar ENTER e entrar
-    document.getElementById('pass').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            checkLogin();
-        }
-    });
-
-    // Função para Sincronização em Nuvem (Preparada para API)
-    async function sincronizarDados() {
-        console.log("Sincronizando com nuvem para multi-dispositivos...");
-        // Aqui você faria o fetch para o seu backend/Firebase
-        // Ex: const nuvem = await fetch('sua-api.com/progresso');
+    function carregarAssuntos() {
+        const d = document.getElementById('selDisc').value;
+        const sa = document.getElementById('selAssunto');
+        sa.innerHTML = '<option value="">Assunto</option>';
+        if(d && disciplinas[d]) disciplinas[d].forEach(a => sa.innerHTML += `<option value="${a}">${a}</option>`);
+        else if (d) sa.innerHTML += `<option value="Geral">Tópico Geral</option>`;
     }
+
+    // --- CÁLCULO AO VIVO ---
+    function calcularAoVivo() {
+        const total = parseInt(document.getElementById('fTotal').value) || 0;
+        const erros = parseInt(document.getElementById('fErr').value) || 0;
+        const box = document.getElementById('live-calc');
+        
+        if(total > 0) {
+            const acertos = total - erros;
+            if(acertos < 0) {
+                box.style.display = 'none';
+                return;
+            }
+            const perc = ((acertos / total) * 100).toFixed(1);
+            
+            document.getElementById('txt-acertos').innerText = acertos;
+            document.getElementById('txt-perc').innerText = perc + "%";
+            box.style.display = 'block';
+        } else {
+            box.style.display = 'none';
+        }
+    }
+
+    function salvar() {
+        const total = parseInt(document.getElementById('fTotal').value);
+        const erros = parseInt(document.getElementById('fErr').value);
+        const mat = document.getElementById('selDisc').value;
+        const top = document.getElementById('selAssunto').value;
+        const cargo = document.getElementById('selCargo').value;
+
+        if(!total || total <= 0) return alert("Preencha o total de questões!");
+        if(erros < 0 || erros > total) return alert("Número de erros inválido!");
+        if(!mat || !top) return alert("Selecione matéria e assunto!");
+
+        const acertos = total - erros; 
+
+        dados.push({
+            data: new Date().toLocaleDateString('pt-BR'),
+            cargo: cargo,
+            materia: mat,
+            topico: top,
+            total: total,
+            erros: erros,
+            acertos: acertos
+        });
+        
+        localStorage.setItem('elite_v4_dados', JSON.stringify(dados));
+        
+        // Limpar campos
+        document.getElementById('fTotal').value = '';
+        document.getElementById('fErr').value = '';
+        document.getElementById('live-calc').style.display = 'none';
+        
+        render();
+    }
+
+    function render() {
+        const cargoAtual = document.getElementById('selCargo').value || perfil.cargo;
+        if(cargoAtual) document.getElementById('selCargo').value = cargoAtual;
+        
+        const dadosFiltrados = cargoAtual ? dados.filter(d => d.cargo === cargoAtual) : dados;
+
+        const tQ = dadosFiltrados.reduce((a, b) => a + b.total, 0);
+        const tA = dadosFiltrados.reduce((a, b) => a + b.acertos, 0);
+        const media = tQ > 0 ? ((tA/tQ)*100).toFixed(1) : 0;
+
+        document.getElementById('kpi-media').innerText = media + "%";
+        document.getElementById('kpi-total').innerText = tQ;
+        document.getElementById('kpi-acertos').innerText = tA;
+
+        // Gráfico Radar
+        const mData = {};
+        dadosFiltrados.forEach(d => {
+            if(!mData[d.materia]) mData[d.materia] = {a:0, t:0};
+            mData[d.materia].a += d.acertos;
+            mData[d.materia].t += d.total;
+        });
+        
+        const labels = Object.keys(mData);
+        const scores = labels.map(l => (mData[l].a / mData[l].t * 100).toFixed(1));
+
+        if(chartRadar) chartRadar.destroy();
+        chartRadar = new Chart(document.getElementById('radarChart'), {
+            type: 'radar',
+            data: { labels: labels, datasets: [{ label: 'Performance Atual (%)', data: scores, backgroundColor: 'rgba(79, 70, 229, 0.2)', borderColor: '#4f46e5' }] },
+            options: { scales: { r: { min: 0, max: 100 } } }
+        });
+
+        // Lista de Revisão
+        const list = document.getElementById('rev-list');
+        list.innerHTML = '';
+        dadosFiltrados.slice().reverse().forEach(s => {
+            list.innerHTML += `<div style="padding:15px; border-bottom:1px solid #eee; display:flex; justify-content:space-between">
+                <div><b>${s.materia}</b> <span style="font-size:0.8rem; color:#64748b">(${s.cargo})</span><br><small>${s.topico}</small></div>
+                <div style="text-align:right">
+                    <span style="color:${((s.acertos/s.total) >= 0.8 ? 'green' : 'orange')}">
+                        <b>${s.acertos}</b> acertos
+                    </span> / ${s.total}<br>
+                    <small>${s.data}</small>
+                </div>
+            </div>`;
+        });
+    }
+
+    function showPage(id) {
+        document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+        document.getElementById(id).style.display = 'block';
+        if(window.innerWidth < 768) document.getElementById('sidebar').classList.remove('active');
+        render();
+    }
+
+    function salvarPerfil() {
+        perfil.nome = document.getElementById('cfg-nome').value;
+        perfil.foto = document.getElementById('cfg-foto').value;
+        localStorage.setItem('elite_v4_perfil', JSON.stringify(perfil));
+        document.getElementById('side-name').innerText = perfil.nome || "Visitante";
+        if(perfil.foto) document.getElementById('side-img').src = perfil.foto;
+    }
+
+    function salvarObs() {
+        perfil.obs = document.getElementById('obs-mentor').value;
+        localStorage.setItem('elite_v4_perfil', JSON.stringify(perfil));
+        alert("Salvo!");
+    }
+
+    function resetarDados() {
+        if(confirm("ATENÇÃO: Isso apaga tudo. Confirmar?")) {
+            localStorage.clear();
+            location.reload();
+        }
+    }
+</script>
+</body>
+</html>
