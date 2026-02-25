@@ -264,21 +264,42 @@
     let perfil = JSON.parse(localStorage.getItem('elite_v4_perfil')) || { nome: "Estudante", foto: "", cargo: "", obs: "" };
     let chartRadar;
 
+    // --- LÓGICA DE LOGIN ATUALIZADA ---
     function checkLogin() {
-        const p = document.getElementById('pass').value;
-        if(p === PASS_MENTOR || p === PASS_ALUNO) {
+        const pass = document.getElementById('pass').value;
+        
+        if(pass === PASS_MENTOR || pass === PASS_ALUNO) {
             document.getElementById('login-screen').style.display = 'none';
-            if(p === PASS_MENTOR) {
-                document.querySelectorAll('.admin-only').forEach(e => e.style.display = 'block');
+            
+            if(pass === PASS_MENTOR) {
+                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
+                document.getElementById('role-badge').innerHTML = '<span style="background:var(--primary); color:white; font-size:10px; padding:3px 8px; border-radius:5px">MENTOR</span>';
                 document.getElementById('obs-mentor').disabled = false;
-                document.getElementById('role-badge').innerText = "MENTOR";
-                document.getElementById('role-badge').style.background = "#f59e0b";
             } else {
                 document.getElementById('obs-mentor').disabled = true;
-                document.getElementById('role-badge').innerText = "ALUNO";
             }
+            
+            sincronizarDados();
             init();
-        } else { alert("Senha inválida"); }
+        } else { 
+            alert("Senha incorreta!"); 
+        }
+    }
+
+    // Event Listener para ENTER no login
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('pass').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkLogin();
+            }
+        });
+    });
+
+    // Função para Sincronização em Nuvem (Preparada para API)
+    async function sincronizarDados() {
+        console.log("Sincronizando com nuvem para multi-dispositivos...");
+        // Aqui você faria o fetch para o seu backend/Firebase
+        // Ex: const nuvem = await fetch('sua-api.com/progresso');
     }
 
     function init() {
