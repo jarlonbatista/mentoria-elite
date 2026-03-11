@@ -215,20 +215,95 @@
     const PASS_ALUNO = "aluno@elite";
 
     // --- SEPARAÇÃO ESTRITA DOS EDITAIS ---
-    const editais = {
-        "SEFA-PA": [
-            "Língua Portuguesa", "Matemática Financeira", "Raciocínio Lógico", "Estatística",
-            "Direito Constitucional", "Direito Administrativo", "Direito Tributário", 
-            "Legislação Tributária PA", "Contabilidade Geral", "Auditoria Fiscal",
-            "Direito Civil", "Direito Empresarial", "Economia", "TI (Fiscal)"
-        ],
-        "PF": [
-            "Língua Portuguesa", "Direito Administrativo", "Direito Constitucional",
-            "Direito Penal", "Direito Processual Penal", "Legislação Especial",
-            "Estatística (Avançada)", "Raciocínio Lógico", "Informática (TI)", 
-            "Contabilidade Geral (Avançada)", "Direitos Humanos"
-        ],
-        "PC-PA": [
+    // --- BANCO DE DADOS INTEGRAL: PERITO CRIMINAL FEDERAL (ÁREA 3) ---
+const editais = {
+    "PF - Perito Criminal Federal (Informática)": [
+        "Língua Portuguesa",
+        "Informática Básica",
+        "Noções de Direito Administrativo",
+        "Noções de Direito Constitucional",
+        "Direito Penal e Processual Penal",
+        "Noções de Criminalística",
+        "Direitos Humanos",
+        "Raciocínio Lógico",
+        "Fundamentos da Computação",
+        "Bancos de Dados",
+        "Engenharia Reversa de Software",
+        "Linguagens de Programação",
+        "Estruturas de Dados e Algoritmos",
+        "Redes de Computadores",
+        "Segurança da Informação",
+        "Segurança de Redes",
+        "Criptografia",
+        "Sistemas Operacionais (Win/Lin/Mobile)",
+        "Governança de TI e Legislação",
+        "Inteligência Artificial e Forense"
+    ]
+};
+
+const disciplinas = {
+    "Língua Portuguesa": [
+        "1 Compreensão e interpretação de textos", "2 Tipos e gêneros textuais", "3 Ortografia oficial", "4 Coesão textual (referenciação, conectores)", "4.2 Tempos e modos verbais", "5 Estrutura morfossintática", "5.1 Classes de palavras", "5.2 Coordenação e subordinação", "5.4 Pontuação", "5.5 Concordância verbal e nominal", "5.6 Regência verbal e nominal", "5.7 Crase", "5.8 Pronomes átonos", "6 Reescrita de frases e significação de palavras", "7 Redação Oficial (Manual da Presidência)"
+    ],
+    "Informática Básica": [
+        "1 Hardware e Software", "2 SO: Windows, Android e iOS", "3 Navegadores e Office 365 (Teams/OneDrive)", "4 Segurança: Malware (Vírus, Ransomware, Zero-day)", "4.3 Phishing e Engenharia Social", "4.4 EDR, Firewall e Gerenciadores de senhas", "4.5 MFA e Certificação Digital", "5 Cloud Computing", "6 Bancos de Dados (Estruturados/Não estruturados)", "7 Redes (LAN/WAN/VPN/TCP-IP)", "8 Python e Low-Code", "9 Metadados", "10 IA Generativa, Big Data e Mineração"
+    ],
+    "Noções de Direito Administrativo": [
+        "1 Organização Administrativa (Direta/Indireta)", "2 Ato Administrativo (Requisitos/Atributos)", "3 Agentes Públicos (Lei 8.112/90)", "4 Poderes (Hierárquico, Disciplinar, Polícia)", "5 Licitação (Lei 14.133/21)", "6 Controle da Adm Pública", "7 Responsabilidade Civil do Estado", "8 Princípios (LIMPE e Implícitos)"
+    ],
+    "Noções de Direito Constitucional": [
+        "1 Direitos e Garantias Fundamentais", "1.1 Direitos Individuais e Coletivos", "1.2 Direitos Sociais e Nacionalidade", "1.3 Direitos Políticos e Partidos", "2 Poder Executivo (Chefia de Estado/Governo)", "3 Defesa do Estado e Segurança Pública", "4 Ordem Social (Saúde, Meio Ambiente, Família)"
+    ],
+    "Direito Penal e Processual Penal": [
+        "1 Princípios Básicos e Aplicação da Lei", "2 Lei Penal no Tempo e Espaço", "3 Fato Típico, Ilicitude e Excesso", "4 Crimes contra a Pessoa e Patrimônio", "6 Crimes contra a Fé e Adm Pública", "8 Inquérito Policial (Natureza e Valor)", "9 Prova (Corpo de Delito e Perícias)", "9.2 Cadeia de Custódia (Etapas e Efeitos)", "10 Prisão em Flagrante", "11 Função Pericial do Estado (Lei 12.030/09)"
+    ],
+    "Noções de Criminalística": [
+        "1 Conceitos: Vestígio, Evidência e Indício", "1.4 Teoria de Locard", "1.5 Classificação de Vestígios (Bio/Fis/Qui)", "1.7 Fotografia Pericial", "3 Locais de Crime (Isolamento e Preservação)", "3.4 Processamento e Busca de Vestígios", "3.5 Exame Perinecriscópico e Tanatologia", "4 Balística Forense (Armas e Resíduos)", "5 Laudo Pericial", "6 Rastreabilidade e Isótopos"
+    ],
+    "Direitos Humanos": [
+        "1 DH na CF/88", "2 Sistema Internacional de Proteção", "3 Convenção Genocídio e Refugiados", "5 Discriminação Racial e Mulher", "7 Convenção contra Tortura", "8 Desaparecimento Forçado", "9 Regras da ONU (Pessoas Presas)", "10 Uso da Força e Armas de Fogo", "11 Lei 13.060 (Menor Potencial Ofensivo)"
+    ],
+    "Raciocínio Lógico": [
+        "1 Estruturas Lógicas", "2 Lógica de Argumentação", "3 Lógica Sentencial (Proposições)", "3.2 Tabelas Verdade", "3.3 Equivalências e Leis de Morgan", "3.5 Diagramas Lógicos", "4 Lógica de Primeira Ordem", "5 Contagem e Probabilidade", "6 Conjuntos", "7 Problemas Aritméticos e Matriciais"
+    ],
+    "Fundamentos da Computação": [
+        "1.1 Organização e Arquitetura", "1.2 Kernel e Gerenciadores (Memória/Arquivos)", "1.3 Processadores (Multicore/Hyper-Threading/GPU)", "1.4 Sistemas Distribuídos", "1.5 Virtualização e Contêineres", "1.6 RAID", "1.7 Sistemas de Arquivos (NTFS, FAT32, EXT4, XFS)", "1.8 Computação Quântica"
+    ],
+    "Bancos de Dados": [
+        "2.1 Arquitetura e Representação Física", "2.2 Bancos Multidimensionais", "2.3 SGBDs Relacionais (SQLite)", "2.4 SQL (DDL, DML)", "2.5 Transações e Logs", "2.6 NoSQL"
+    ],
+    "Engenharia Reversa de Software": [
+        "3.1 Descompilação de Programas", "3.2 Debuggers", "3.3 Análise de Malware (Backdoors/Rootkits)", "3.4 Ofuscação de Código", "3.6 Malware Polimórfico", "3.7 Sandboxing", "3.8 Assembly"
+    ],
+    "Linguagens de Programação": [
+        "4.1 POO (Herança, Polimorfismo)", "4.4 Compiladores e Interpretadores", "4.5 Linguagens C, Java, Javascript e Python", "4.6 Web: HTML, XML, JSON, REST/GraphQL", "4.7 Análise Estática (SonarQube)"
+    ],
+    "Estruturas de Dados e Algoritmos": [
+        "5.1 Listas, Filas, Pilhas e Árvores", "5.2 Busca e Ordenação", "5.3 Complexidade de Algoritmos", "5.4 Autômatos"
+    ],
+    "Redes de Computadores": [
+        "6.1 Topologias e Tecnologias", "6.4 Hubs, Switches e Roteadores", "6.5 Modelo OSI e TCP/IP", "6.5.4 P2P e Redes Sem Fio (802.11)", "6.5.7 Protocolos (HTTP, SSH, DNS, BGP, TLS)", "6.6 Redes TOR", "6.7 Cloud Computing"
+    ],
+    "Segurança da Informação": [
+        "7.1 ISO 27001 e 27002:2022", "7.2 Ciclo SDL e OWASP Top 10", "7.3 Docker e Kubernetes Security", "7.4 SSO, OAuth 2.0 e OIDC", "7.4.2 Biometria e FIDO2", "7.6 OSINT", "7.7 Esteganografia", "7.8 Recuperação de Dados (Cloud/Local)"
+    ],
+    "Segurança de Redes": [
+        "8.1 IPS, IDS, EDR, XDR e SIEM", "8.2 DNSSEC, DMARC, SPF", "8.3 Sniffers e Tráfego", "8.4 WPA3 e 802.1X", "8.5 Ataques (DoS, SQLi, XSS, MITRE ATT&CK)", "8.6 NIST CSF e CIS Controls", "8.7 APTs"
+    ],
+    "Criptografia": [
+        "9.1 Simétrica e Assimétrica", "9.2 Certificação Digital", "9.4 RSA, AES, ECC e Twofish", "9.5 Diffie–Hellman", "9.6 Hashes (MD5, SHA-1/2/3)", "9.7 Criptoanálise e MITM", "9.8 Protocolo Signal", "9.9 Blockchain e Criptomoedas"
+    ],
+    "Sistemas Operacionais (Win/Lin/Mobile)": [
+        "10.1 Windows 10/11 e Server 19/22", "10.3 Log de Eventos e Registro", "11.2 Permissões Linux", "11.4 Shell e Comandos", "12.1 Arquitetura Android e iOS", "12.2 Sandboxing e Criptografia Mobile"
+    ],
+    "Governança de TI e Legislação": [
+        "13.1 ITIL 4", "13.2 Lei 14.133 e IN 94/22", "13.3 Marco Civil da Internet (Lei 12.965)"
+    ],
+    "Inteligência Artificial e Forense": [
+        "14.1 Machine Learning e Análise Preditiva", "14.2 Deep Learning", "14.3 LLMs e NLP", "14.4 IA Generativa e Deepfakes", "15.1 Crimes Cibernéticos", "15.2 Coleta de Vestígio Cibernético", "15.3 Exames Forenses"
+    ]
+};
+      "PC-PA": [
             "Língua Portuguesa", "Raciocínio Lógico", "Noções de Informática",
             "Conhecimentos do Pará", "Direito Administrativo", "Direito Constitucional",
             "Direito Penal", "Direito Processual Penal", "Legislação Especial", 
@@ -447,4 +522,5 @@
 </script>
 </body>
 </html>
+
 
