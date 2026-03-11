@@ -67,7 +67,6 @@
         <p style="color: #64748b; margin-bottom: 25px;">Acesso Restrito - Carreira Policial</p>
         <input type="password" id="pass" placeholder="Senha de Acesso" style="text-align: center; font-size: 1.2rem; letter-spacing: 2px;">
         <button class="btn btn-primary" onclick="checkLogin()">ENTRAR</button>
-        <div style="margin-top: 15px; font-size: 0.8rem; color: #94a3b8;">Mentor: mentoria@elite | Aluno: aluno@elite</div>
     </div>
 </div>
 
@@ -92,7 +91,7 @@
 
     <div class="admin-only">
         <button class="btn" onclick="gerarRelatorioPDF()" style="background: #0ea5e9; color: white;"><i class="fas fa-file-pdf"></i> PDF</button>
-        <button class="btn" onclick="resetarDados()" style="background: #ef4444; color: white;"><i class="fas fa-trash"></i> RESET</button>
+        <button class="btn" onclick="resetarDados()" style="background: #ef4444; color: white; margin-top: 10px;"> <i class="fas fa-trash"></i> RESET</button>
     </div>
 
     <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.75rem; text-align: center; color: #94a3b8;">
@@ -183,7 +182,11 @@
         const p = document.getElementById('pass').value;
         if(p === PASS_MENTOR || p === PASS_ALUNO) {
             document.getElementById('login-screen').style.display = 'none';
-            if(p === PASS_MENTOR) document.querySelectorAll('.admin-only').forEach(e => e.style.display = 'block');
+            if(p === PASS_MENTOR) {
+                document.querySelectorAll('.admin-only').forEach(e => e.style.display = 'block');
+                document.getElementById('role-badge').innerText = "MENTOR";
+                document.getElementById('role-badge').style.background = "#f59e0b";
+            }
             init();
         } else { alert("Senha incorreta"); }
     }
@@ -231,7 +234,7 @@
         const e = parseInt(document.getElementById('fErr').value);
         const m = document.getElementById('selDisc').value;
         const s = document.getElementById('selAssunto').value;
-        if(!t || !m) return alert("Preencha os campos!");
+        if(!t || !m || m === "Disciplina") return alert("Preencha os campos corretamente!");
         dados.push({ data: new Date().toLocaleDateString('pt-BR'), cargo: perfil.cargo, materia: m, topico: s, total: t, acertos: t-e });
         localStorage.setItem('elite_v4_dados', JSON.stringify(dados));
         render();
@@ -256,7 +259,7 @@
         if(chartRadar) chartRadar.destroy();
         chartRadar = new Chart(document.getElementById('radarChart'), {
             type: 'radar',
-            data: { labels: labels, datasets: [{ label: '%', data: scores, backgroundColor: 'rgba(79, 70, 229, 0.2)', borderColor: '#4f46e5' }] },
+            data: { labels: labels, datasets: [{ label: '% de Acertos', data: scores, backgroundColor: 'rgba(79, 70, 229, 0.2)', borderColor: '#4f46e5' }] },
             options: { scales: { r: { min: 0, max: 100 } } }
         });
 
@@ -277,9 +280,16 @@
         perfil.foto = document.getElementById('cfg-foto').value;
         localStorage.setItem('elite_v4_perfil', JSON.stringify(perfil));
         init();
+        alert("Perfil atualizado!");
     }
 
-    function resetarDados() { if(confirm("Apagar tudo?")) { localStorage.clear(); location.reload(); } }
+    function salvarObs() {
+        perfil.obs = document.getElementById('obs-mentor').value;
+        localStorage.setItem('elite_v4_perfil', JSON.stringify(perfil));
+        alert("Plano estratégico atualizado!");
+    }
+
+    function resetarDados() { if(confirm("ATENÇÃO: Deseja apagar todos os seus registros de estudo?")) { localStorage.clear(); location.reload(); } }
 </script>
 </body>
 </html>
