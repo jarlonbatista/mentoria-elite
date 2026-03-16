@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elite Mentor | Sistema V4 - Perícia Criminal</title>
+    <title>Projeto Mentoria Elite | Jarlon Batista</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -11,48 +12,59 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root { --primary: #4f46e5; --secondary: #10b981; --danger: #ef4444; --dark: #0f172a; --bg: #f8fafc; --text: #334155; }
-        * { box-sizing: border-box; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; color: var(--text); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
+        :root { 
+            --primary: #4f46e5; --secondary: #10b981; --accent: #6366f1;
+            --dark: #0f172a; --sidebar: #1e293b; --bg: #f1f5f9; --white: #ffffff; --danger: #ef4444;
+        }
 
-        /* Login */
-        #login-screen { position: fixed; inset: 0; background: var(--dark); display: flex; align-items: center; justify-content: center; z-index: 5000; padding: 20px; }
-        .login-box { background: white; padding: 40px; border-radius: 24px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #334155; overflow-x: hidden; }
 
-        /* Sidebar com Scroll */
+        #login-screen { 
+            position: fixed; inset: 0; background: radial-gradient(circle at top right, #1e293b, #0f172a); 
+            display: flex; align-items: center; justify-content: center; z-index: 9999; 
+        }
+        .login-box { 
+            background: var(--white); padding: 45px; border-radius: 28px; width: 90%; max-width: 400px; 
+            text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); 
+        }
+
         .sidebar { 
-            width: 280px; background: #1e293b; color: white; height: 100vh; position: fixed; 
-            padding: 25px; display: flex; flex-direction: column; z-index: 3000; transition: 0.3s; overflow-y: auto; 
+            width: 280px; background: var(--sidebar); color: white; height: 100vh; position: fixed; 
+            padding: 30px 20px; display: flex; flex-direction: column; z-index: 3000; transition: 0.3s ease;
         }
-        .sidebar::-webkit-scrollbar { width: 6px; }
-        .sidebar::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        .main-content { margin-left: 280px; padding: 40px; transition: 0.3s ease; }
 
-        .main-content { margin-left: 280px; padding: 40px; width: calc(100% - 280px); }
-
-        /* Componentes */
-        .card { background: white; padding: 25px; border-radius: 20px; border: 1px solid #e2e8f0; margin-bottom: 25px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
-        .mini-card { background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; text-align: center; }
-        
-        .result-box {
-            background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; 
-            padding: 15px; border-radius: 12px; margin-top: 15px; text-align: center; font-weight: 700; display: none;
+        .card { 
+            background: var(--white); padding: 25px; border-radius: 20px; border: 1px solid #e2e8f0; 
+            margin-bottom: 25px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); 
+        }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .mini-card { 
+            background: var(--white); padding: 25px; border-radius: 20px; text-align: center; 
+            border-bottom: 4px solid var(--primary);
         }
 
-        input, select, textarea { padding: 12px; border: 1.5px solid #cbd5e1; border-radius: 10px; margin-top: 5px; width: 100%; font-size: 0.95rem; }
-        input:focus, select:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
-        
-        .btn { padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; width: 100%; margin-top: 10px; transition: 0.2s; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: #4338ca; }
-        
-        .admin-only { display: none; } 
+        input, select { 
+            padding: 14px; border: 1.5px solid #e2e8f0; border-radius: 12px; margin-top: 8px; 
+            width: 100%; background: #f8fafc; font-weight: 500;
+        }
+        .btn { 
+            padding: 16px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; 
+            width: 100%; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4); }
+        .btn-logout { background: transparent; color: #94a3b8; border: 1px solid #334155; margin-top: 10px; font-size: 0.8rem; }
+        .btn-logout:hover { background: var(--danger); color: white; border-color: var(--danger); }
 
-        @media (max-width: 768px) {
-            .sidebar { left: -100%; width: 260px; }
+        .admin-only { display: none; }
+        .page { animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 1024px) {
+            .sidebar { left: -280px; }
             .sidebar.active { left: 0; }
-            .main-content { margin-left: 0; width: 100%; padding: 20px; }
-            .stats-grid { grid-template-columns: 1fr; }
+            .main-content { margin-left: 0; padding: 20px; }
         }
     </style>
 </head>
@@ -60,234 +72,136 @@
 
 <div id="login-screen">
     <div class="login-box">
-        <div style="background: var(--primary); width: 60px; height: 60px; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
-            <i class="fas fa-shield-halved fa-2x" style="color: white;"></i>
+        <div style="background: var(--primary); width: 70px; height: 70px; border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px;">
+            <i class="fas fa-shield-alt fa-2x" style="color: white;"></i>
         </div>
-        <h2>Sistema Elite V4</h2>
-        <p style="color: #64748b; margin-bottom: 25px;">Acesso Restrito - Carreira Policial</p>
-        <input type="password" id="pass" placeholder="Senha de Acesso" style="text-align: center; font-size: 1.2rem; letter-spacing: 2px;">
-        <button class="btn btn-primary" onclick="checkLogin()">ENTRAR</button>
+        <h2 style="font-weight: 800; color: var(--dark);">MENTORIA ELITE</h2>
+        <p style="color: #64748b; margin-bottom: 30px; font-size: 0.9rem;">Área de Acesso Restrito</p>
+        <input type="password" id="pass" placeholder="Chave de Acesso" style="text-align: center; letter-spacing: 4px;">
+        <button class="btn btn-primary" onclick="checkLogin()">ACESSAR PAINEL</button>
     </div>
 </div>
 
 <aside class="sidebar" id="sidebar">
-    <div style="text-align: center; margin-bottom: 20px;">
-        <img id="side-img" src="https://ui-avatars.com/api/?name=Elite&background=4f46e5&color=fff" style="width: 80px; border-radius: 20px; margin-bottom: 10px;">
-        <h4 id="side-name" style="margin:0">Candidato</h4>
-        <small id="role-badge" style="display:inline-block; padding:2px 8px; border-radius:4px; font-size:0.7rem; margin-top:5px; background:rgba(255,255,255,0.1)">ALUNO</small>
+    <div style="text-align: center; margin-bottom: 40px;">
+        <img id="side-img" src="https://ui-avatars.com/api/?name=Jarlon+Batista&background=4f46e5&color=fff" style="width: 90px; border-radius: 24px; border: 4px solid rgba(255,255,255,0.1);">
+        <h3 style="margin-top: 15px; font-weight: 700;">Jarlon Batista</h3>
+        <span id="role-badge" style="font-size: 0.65rem; background: var(--primary); padding: 3px 10px; border-radius: 20px; font-weight: 800;">ALUNO</span>
     </div>
-    
+
     <nav style="flex-grow: 1;">
-        <div onclick="showPage('dash-p')" style="padding: 12px; cursor: pointer; color: white; display: flex; align-items: center; gap: 10px;">
-            <i class="fas fa-chart-pie"></i> Dashboard
+        <div onclick="showPage('dash-p')" style="padding: 15px; cursor: pointer; display: flex; align-items: center; gap: 12px; border-radius: 12px; margin-bottom: 5px;">
+            <i class="fas fa-chart-pie"></i> Painel de Controle
         </div>
-        <div onclick="showPage('rev-p')" style="padding: 12px; cursor: pointer; color: #94a3b8; display: flex; align-items: center; gap: 10px;">
-            <i class="fas fa-history"></i> Histórico
-        </div>
-        <div onclick="showPage('config-p')" style="padding: 12px; cursor: pointer; color: #94a3b8; display: flex; align-items: center; gap: 10px;">
-            <i class="fas fa-user-gear"></i> Perfil
+        <div onclick="showPage('rev-p')" style="padding: 15px; cursor: pointer; display: flex; align-items: center; gap: 12px; border-radius: 12px;">
+            <i class="fas fa-history"></i> Histórico de Estudos
         </div>
     </nav>
 
-    <div class="admin-only">
-        <button class="btn" onclick="gerarRelatorioPDF()" style="background: #0ea5e9; color: white;"><i class="fas fa-file-pdf"></i> PDF</button>
-        <button class="btn" onclick="resetarDados()" style="background: #ef4444; color: white; margin-top: 10px;"> <i class="fas fa-trash"></i> RESET</button>
+    <div style="padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+        <button class="btn" style="background: var(--secondary); color: white; font-size: 0.8rem;" onclick="gerarPDF()">
+            <i class="fas fa-file-pdf"></i> GERAR PDF ESTATÍSTICO
+        </button>
+        <button class="btn btn-logout" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> SAIR DO SISTEMA
+        </button>
     </div>
 
-    <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.75rem; text-align: center; color: #94a3b8;">
-        <p>Elite Mentor v4.0</p>
-        <p style="font-weight: 700; color: white;">Dev: Jarlon Batista</p>
+    <div style="margin-top: 30px; font-size: 0.65rem; text-align: center; opacity: 0.4;">
+        © 2026 Jarlon Batista<br>Todos os direitos reservados.
     </div>
 </aside>
 
-<main class="main-content">
+<main class="main-content" id="capture-area">
     <div id="dash-p" class="page">
+        <header style="margin-bottom: 30px;">
+            <h2 style="font-weight: 800; color: var(--dark);">Bem-vindo ao Projeto Mentoria Elite.</h2>
+            <p style="color: #64748b;">Monitore seu desempenho em tempo real. Aqui a missão é evoluir e não regredir!</p>
+        </header>
+
         <div class="stats-grid">
-            <div class="mini-card"><small>PERFORMANCE</small><h2 id="kpi-media" style="color: var(--primary)">0%</h2></div>
-            <div class="mini-card"><small>QUESTÕES</small><h2 id="kpi-total">0</h2></div>
-            <div class="mini-card"><small>ACERTOS</small><h2 id="kpi-acertos" style="color: var(--secondary)">0</h2></div>
+            <div class="mini-card"><small style="font-weight: 700; color: #94a3b8;">MÉDIA GLOBAL</small><h1 id="kpi-media" style="color: var(--primary); font-size: 2.5rem;">0%</h1></div>
+            <div class="mini-card"><small style="font-weight: 700; color: #94a3b8;">TOTAL QUESTÕES</small><h1 id="kpi-total" style="color: var(--dark); font-size: 2.5rem;">0</h1></div>
+            <div class="mini-card"><small style="font-weight: 700; color: #94a3b8;">TOTAL ACERTOS</small><h1 id="kpi-acertos" style="color: var(--secondary); font-size: 2.5rem;">0</h1></div>
         </div>
 
-        <div class="card">
-            <h3><i class="fas fa-pen-nib"></i> Registrar Desempenho</h3>
-            <div style="margin-bottom: 15px;">
+        <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 25px;">
+            <div class="card">
+                <h4 style="margin-bottom: 20px;"><i class="fas fa-plus-circle"></i> Novo Registro de Performance</h4>
                 <select id="selCargo" onchange="atualizarCargo()">
                     <option value="">Selecione o Edital...</option>
                     <option value="PF">PF - Perito Criminal (Informática)</option>
-                    <option value="PC-PA">Polícia Civil do Pará (PC-PA)</option>
+                    <option value="PC-PA">PC-PA - Polícia Civil</option>
                 </select>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                    <select id="selDisc" onchange="carregarAssuntos()"><option>Disciplina</option></select>
+                    <select id="selAssunto"><option>Assunto</option></select>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                    <input type="number" id="fTotal" placeholder="Questões Feitas">
+                    <input type="number" id="fErr" placeholder="Total Erros">
+                </div>
+                <button class="btn btn-primary" onclick="salvar()">SINCRONIZAR DADOS</button>
             </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
-                <select id="selDisc" onchange="carregarAssuntos()"><option>Disciplina</option></select>
-                <select id="selAssunto"><option>Assunto</option></select>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <input type="number" id="fTotal" placeholder="Total de Questões" oninput="calcularAoVivo()">
-                <input type="number" id="fErr" placeholder="Erros" oninput="calcularAoVivo()">
-            </div>
-            <div id="live-calc" class="result-box">
-                <span id="txt-acertos">0</span> Acertos | <span id="txt-perc">0%</span>
-            </div>
-            <button class="btn btn-primary" onclick="salvar()">SALVAR SESSÃO</button>
-        </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-            <div class="card"><h4>Raio-X Técnico</h4><canvas id="radarChart"></canvas></div>
-            <div class="card">
-                <h4><i class="fas fa-chess-knight"></i> Estratégia</h4>
-                <textarea id="obs-mentor" rows="6"></textarea>
-                <button class="btn admin-only" style="background: var(--secondary); color: white;" onclick="salvarObs()">ATUALIZAR</button>
+            <div class="card" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <h4 style="margin-bottom: 20px;">Radar de Competências</h4>
+                <canvas id="radarChart"></canvas>
             </div>
         </div>
     </div>
 
-    <div id="rev-p" class="page" style="display:none"><h2>Histórico</h2><div id="rev-list"></div></div>
-    <div id="config-p" class="page" style="display:none"><h2>Perfil</h2>
-        <div class="card"><input id="cfg-nome" placeholder="Nome"><input id="cfg-foto" placeholder="URL da Foto" style="margin-top:10px">
-        <button class="btn btn-primary" onclick="salvarPerfil()">ATUALIZAR PERFIL</button></div>
+    <div id="rev-p" class="page" style="display:none">
+        <h2 style="margin-bottom: 25px;">Análise Histórica</h2>
+        <div id="rev-list"></div>
     </div>
 </main>
 
 <script>
-   
-   // Configuração Inicial
-const SUPABASE_URL = 'https://dpifevhuouwjkcyolwhd.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_XcrePCj-tJeIFti4fER7Lg_AjCGvnVt';
-const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const SUPABASE_URL = 'https://dpifevhuouwjkcyolwhd.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_XcrePCj-tJeIFti4fER7Lg_AjCGvnVt';
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// FUNÇÃO PARA SALVAR (ENVIAR PARA A NUVEM)
-async function salvar() {
-    const t = parseInt(document.getElementById('fTotal').value);
-    const e = parseInt(document.getElementById('fErr').value);
-    const m = document.getElementById('selDisc').value;
-    const s = document.getElementById('selAssunto').value;
-    const cargo = document.getElementById('selCargo').value;
+    const SENHA_ADM = "admin@elite";
+    const SENHA_ALUNO = "aluno@elite";
 
-    if(!t || !m || m === "Disciplina") return alert("Preencha os campos corretamente!");
-
-    const acertos = t - e;
-
-    // Inserindo no Supabase
-    const { data, error } = await _supabase
-        .from('estudos')
-        .insert([
-            { 
-                usuario_id: perfil.nome, 
-                cargo: cargo, 
-                materia: m, 
-                topico: s, 
-                total: t, 
-                acertos: acertos 
-            }
-        ]);
-
-    if (error) {
-        console.error("Erro ao salvar:", error.message);
-        alert("Erro ao sincronizar dados!");
-    } else {
-        document.getElementById('fTotal').value = '';
-        document.getElementById('fErr').value = '';
-        alert("Sessão salva na nuvem com sucesso!");
-        render(); // Chama a busca atualizada
-    }
-}
-
-// FUNÇÃO PARA RENDERIZAR (BUSCAR DA NUVEM)
-async function render() {
-    const cargoAtual = document.getElementById('selCargo').value || perfil.cargo;
-    
-    // Buscando dados do Supabase
-    let { data: dadosNuvem, error } = await _supabase
-        .from('estudos')
-        .select('*')
-        .eq('cargo', cargoAtual)
-        .order('created_at', { ascending: false });
-
-    if (error) {
-        console.error("Erro ao buscar dados:", error.message);
-        return;
-    }
-
-    // Atualizando KPIs
-    const tQ = dadosNuvem.reduce((a, b) => a + b.total, 0);
-    const tA = dadosNuvem.reduce((a, b) => a + b.acertos, 0);
-    document.getElementById('kpi-media').innerText = (tQ > 0 ? (tA/tQ*100).toFixed(1) : 0) + "%";
-    document.getElementById('kpi-total').innerText = tQ;
-    document.getElementById('kpi-acertos').innerText = tA;
-
-    // Lógica do Gráfico Radar
-    const mData = {};
-    dadosNuvem.forEach(d => {
-        if(!mData[d.materia]) mData[d.materia] = {a:0, t:0};
-        mData[d.materia].a += d.acertos; mData[d.materia].t += d.total;
-    });
-    
-    const labels = Object.keys(mData);
-    const scores = labels.map(l => (mData[l].a / mData[l].t * 100).toFixed(1));
-
-    if(chartRadar) chartRadar.destroy();
-    chartRadar = new Chart(document.getElementById('radarChart'), {
-        type: 'radar',
-        data: { labels: labels, datasets: [{ label: '% Acertos', data: scores, backgroundColor: 'rgba(79, 70, 229, 0.2)', borderColor: '#4f46e5' }] },
-        options: { scales: { r: { min: 0, max: 100 } } }
-    });
-
-    // Lista de Histórico
-    const list = document.getElementById('rev-list');
-    list.innerHTML = '';
-    dadosNuvem.forEach(s => {
-        const dataFormatada = new Date(s.created_at).toLocaleDateString('pt-BR');
-        list.innerHTML += `<div style="padding:15px; border-bottom:1px solid #eee;"><b>${s.materia}</b>: ${s.acertos}/${s.total} (${dataFormatada})</div>`;
-    });
-}
-
+    // CONTEÚDO INTEGRAL DOS EDITAIS
     const editais = {
-        "PF": ["Língua Portuguesa", "Informática Básica", "Noções de Direito Administrativo", "Noções de Direito Constitucional", "Direito Penal e Processual Penal", "Noções de Criminalística", "Direitos Humanos", "Raciocínio Lógico", "Fundamentos da Computação", "Bancos de Dados", "Engenharia Reversa de Software", "Linguagens de Programação", "Estruturas de Dados e Algoritmos", "Redes de Computadores", "Segurança da Informação", "Segurança de Redes", "Criptografia", "Sistemas Operacionais (Win/Lin/Mobile)", "Governança de TI e Legislação", "Inteligência Artificial e Forense"],
+        "PF": ["Língua Portuguesa", "Informática Básica", "Direito Administrativo", "Direito Constitucional", "Direito Penal e Processual Penal", "Noções de Criminalística", "Direitos Humanos", "Raciocínio Lógico", "Fundamentos da Computação", "Bancos de Dados", "Engenharia Reversa", "Linguagens de Programação", "Redes de Computadores", "Segurança da Informação", "Criptografia", "Sistemas Operacionais", "Inteligência Artificial"],
         "PC-PA": ["Língua Portuguesa", "Raciocínio Lógico", "Noções de Informática", "Conhecimentos do Pará", "Direito Administrativo", "Direito Constitucional", "Direito Penal", "Direito Processual Penal", "Legislação Especial", "Arquivologia"]
     };
 
     const disciplinas = {
-        "Língua Portuguesa": ["Interpretação", "Ortografia", "Morfossintaxe", "Pontuação", "Concordância", "Crase", "Redação Oficial"],
-        "Informática Básica": ["Hardware", "SO", "Office 365", "Segurança", "Cloud", "IA Generativa"],
-        "Direito Penal e Processual Penal": ["Aplicação da Lei", "Teoria do Crime", "Inquérito", "Prova Pericial", "Cadeia de Custódia (158-A)", "Prisões"],
-        "Noções de Criminalística": ["Vestígio e Indício", "Teoria de Locard", "Locais de Crime", "Balística Forense"],
-        "Fundamentos da Computação": ["Arquitetura", "Kernel", "Sistemas de Arquivos (NTFS/EXT4)", "RAID"],
-        "Engenharia Reversa de Software": ["Descompilação", "Debuggers", "Malware Analysis", "Assembly"],
+        "Língua Portuguesa": ["Interpretação", "Gramática", "Sintaxe", "Redação Oficial"],
+        "Segurança da Informação": ["ISO 27001", "OWASP", "OSINT", "Esteganografia", "Cloud Security"],
         "Criptografia": ["Simétrica/Assimétrica", "RSA/AES", "Hashes", "Blockchain"],
-        "Segurança da Informação": ["ISO 27001", "OWASP", "OSINT", "Esteganografia"],
-        "Inteligência Artificial e Forense": ["Machine Learning", "Deepfakes", "Vestígio Cibernético"],
-        "Raciocínio Lógico": ["Lógica Sentencial", "Tabelas Verdade", "Probabilidade"],
-        "Direito Administrativo": ["Atos", "Poderes", "8.112", "Licitações"],
-        "Direito Constitucional": ["Direitos Fundamentais", "Segurança Pública"],
-        "Redes de Computadores": ["OSI/TCP-IP", "Protocolos", "Redes TOR"],
-        "Bancos de Dados": ["SQL", "SQLite", "NoSQL", "Logs"]
+        "Direito Penal e Processual Penal": ["Teoria do Crime", "Inquérito Policial", "Cadeia de Custódia", "Prisões"],
+        "Noções de Criminalística": ["Vestígios", "Teoria de Locard", "Balística", "Locais de Crime"],
+        "Informática Básica": ["Hardware", "Software", "Redes", "Malware"],
+        "Redes de Computadores": ["Modelo OSI/TCP-IP", "Protocolos", "Redes TOR", "DNS/SSH"],
+        "Bancos de Dados": ["SQL", "NoSQL", "Modelagem", "SQLite"],
+        "Inteligência Artificial": ["Machine Learning", "Deep Learning", "Deepfakes", "IA Forense"]
     };
 
-    let dados = JSON.parse(localStorage.getItem('elite_v4_dados')) || [];
-    let perfil = JSON.parse(localStorage.getItem('elite_v4_perfil')) || { nome: "Estudante", foto: "", cargo: "", obs: "" };
     let chartRadar;
+    let perfil = { nome: "Jarlon Batista", cargo: "" };
 
     function checkLogin() {
         const p = document.getElementById('pass').value;
-        if(p === PASS_MENTOR || p === PASS_ALUNO) {
+        if(p === SENHA_ADM || p === SENHA_ALUNO) {
             document.getElementById('login-screen').style.display = 'none';
-            if(p === PASS_MENTOR) {
+            if(p === SENHA_ADM) {
                 document.querySelectorAll('.admin-only').forEach(e => e.style.display = 'block');
-                document.getElementById('role-badge').innerText = "MENTOR";
+                document.getElementById('role-badge').innerText = "ADM / MENTOR";
                 document.getElementById('role-badge').style.background = "#f59e0b";
             }
-            init();
-        } else { alert("Senha incorreta"); }
+            render();
+        } else { alert("Chave inválida!"); }
     }
 
-    document.getElementById('pass').addEventListener('keypress', (e) => { if (e.key === 'Enter') checkLogin(); });
+    document.getElementById('pass').addEventListener('keypress', (e) => { if(e.key === 'Enter') checkLogin(); });
 
-    function init() {
-        document.getElementById('obs-mentor').value = perfil.obs || "";
-        document.getElementById('side-name').innerText = perfil.nome || "Candidato";
-        if(perfil.foto) document.getElementById('side-img').src = perfil.foto;
-        render();
-    }
+    function logout() { location.reload(); }
 
     function atualizarCargo() {
         const c = document.getElementById('selCargo').value;
@@ -296,67 +210,81 @@ async function render() {
         if(c && editais[c]) {
             editais[c].forEach(d => sd.innerHTML += `<option value="${d}">${d}</option>`);
             perfil.cargo = c;
+            render();
         }
     }
 
     function carregarAssuntos() {
         const d = document.getElementById('selDisc').value;
         const sa = document.getElementById('selAssunto');
-        sa.innerHTML = '<option>Assunto</option>';
+        sa.innerHTML = '<option value="Geral">Assunto Geral</option>';
         if(d && disciplinas[d]) disciplinas[d].forEach(a => sa.innerHTML += `<option value="${a}">${a}</option>`);
     }
 
-    function calcularAoVivo() {
-        const t = parseInt(document.getElementById('fTotal').value) || 0;
-        const e = parseInt(document.getElementById('fErr').value) || 0;
-        const box = document.getElementById('live-calc');
-        if(t > 0) {
-            const a = t - e;
-            document.getElementById('txt-acertos').innerText = a;
-            document.getElementById('txt-perc').innerText = ((a/t)*100).toFixed(1) + "%";
-            box.style.display = 'block';
-        } else box.style.display = 'none';
-    }
-
-    function salvar() {
+    async function salvar() {
         const t = parseInt(document.getElementById('fTotal').value);
-        const e = parseInt(document.getElementById('fErr').value);
+        const e = parseInt(document.getElementById('fErr').value) || 0;
         const m = document.getElementById('selDisc').value;
-        const s = document.getElementById('selAssunto').value;
-        if(!t || !m || m === "Disciplina") return alert("Preencha os campos corretamente!");
-        dados.push({ data: new Date().toLocaleDateString('pt-BR'), cargo: perfil.cargo, materia: m, topico: s, total: t, acertos: t-e });
-        localStorage.setItem('elite_v4_dados', JSON.stringify(dados));
-        render();
+        const c = document.getElementById('selCargo').value;
+
+        if(!t || m === "Disciplina" || !c) return alert("Erro: Campos incompletos!");
+
+        const { error } = await _supabase.from('estudos').insert([{
+            usuario_id: perfil.nome, cargo: c, materia: m, topico: document.getElementById('selAssunto').value, total: t, acertos: t-e
+        }]);
+
+        if (error) alert("Falha na sincronização!");
+        else { 
+            alert("Sucesso: Dados computados!"); 
+            document.getElementById('fTotal').value = '';
+            document.getElementById('fErr').value = '';
+            render(); 
+        }
     }
 
-    function render() {
-        const dadosFiltrados = perfil.cargo ? dados.filter(d => d.cargo === perfil.cargo) : dados;
-        const tQ = dadosFiltrados.reduce((a, b) => a + b.total, 0);
-        const tA = dadosFiltrados.reduce((a, b) => a + b.acertos, 0);
+    async function render() {
+        const cargo = document.getElementById('selCargo').value || perfil.cargo;
+        if(!cargo) return;
+
+        const { data, error } = await _supabase.from('estudos').select('*').eq('cargo', cargo);
+        if(error || !data) return;
+
+        const tQ = data.reduce((a, b) => a + b.total, 0);
+        const tA = data.reduce((a, b) => a + b.acertos, 0);
         document.getElementById('kpi-media').innerText = (tQ > 0 ? (tA/tQ*100).toFixed(1) : 0) + "%";
         document.getElementById('kpi-total').innerText = tQ;
         document.getElementById('kpi-acertos').innerText = tA;
 
         const mData = {};
-        dadosFiltrados.forEach(d => {
+        data.forEach(d => {
             if(!mData[d.materia]) mData[d.materia] = {a:0, t:0};
             mData[d.materia].a += d.acertos; mData[d.materia].t += d.total;
         });
-        
+
         const labels = Object.keys(mData);
-        const scores = labels.map(l => (mData[l].a / mData[l].t * 100).toFixed(1));
         if(chartRadar) chartRadar.destroy();
         chartRadar = new Chart(document.getElementById('radarChart'), {
             type: 'radar',
-            data: { labels: labels, datasets: [{ label: '% de Acertos', data: scores, backgroundColor: 'rgba(79, 70, 229, 0.2)', borderColor: '#4f46e5' }] },
-            options: { scales: { r: { min: 0, max: 100 } } }
+            data: { 
+                labels: labels, 
+                datasets: [{ 
+                    label: '% Desempenho', 
+                    data: labels.map(l => (mData[l].a/mData[l].t*100).toFixed(1)), 
+                    backgroundColor: 'rgba(79, 70, 229, 0.2)', 
+                    borderColor: '#4f46e5',
+                    pointBackgroundColor: '#4f46e5'
+                }] 
+            },
+            options: { scales: { r: { min: 0, max: 100, ticks: { display: false } } } }
         });
 
         const list = document.getElementById('rev-list');
-        list.innerHTML = '';
-        dadosFiltrados.slice().reverse().forEach(s => {
-            list.innerHTML += `<div style="padding:15px; border-bottom:1px solid #eee;"><b>${s.materia}</b>: ${s.acertos}/${s.total} (${s.data})</div>`;
-        });
+        list.innerHTML = data.reverse().map(s => `
+            <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                <div><strong>${s.materia}</strong><br><small>${s.topico} | ${s.total} qts</small></div>
+                <div style="text-align:right"><span style="color:var(--secondary); font-weight:800;">${s.acertos} ACERTOS</span><br><small>${((s.acertos/s.total)*100).toFixed(1)}%</small></div>
+            </div>
+        `).join('');
     }
 
     function showPage(id) {
@@ -364,21 +292,18 @@ async function render() {
         document.getElementById(id).style.display = 'block';
     }
 
-    function salvarPerfil() {
-        perfil.nome = document.getElementById('cfg-nome').value;
-        perfil.foto = document.getElementById('cfg-foto').value;
-        localStorage.setItem('elite_v4_perfil', JSON.stringify(perfil));
-        init();
-        alert("Perfil atualizado!");
+    async function gerarPDF() {
+        const { jsPDF } = window.jspdf;
+        const element = document.getElementById('capture-area');
+        const canvas = await html2canvas(element);
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.save('Performance_Mentoria_Elite.pdf');
     }
-
-    function salvarObs() {
-        perfil.obs = document.getElementById('obs-mentor').value;
-        localStorage.setItem('elite_v4_perfil', JSON.stringify(perfil));
-        alert("Plano estratégico atualizado!");
-    }
-
-    function resetarDados() { if(confirm("ATENÇÃO: Deseja apagar todos os seus registros de estudo?")) { localStorage.clear(); location.reload(); } }
 </script>
 </body>
 </html>
