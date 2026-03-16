@@ -149,8 +149,97 @@
 </main>
 
 <script>
-    const PASS_MENTOR = "mentoria@elite";
-    const PASS_ALUNO = "aluno@elite";
+   
+   // Configuração Inicial
+const SUPABASE_URL = 'https://dpifevhuouwjkcyolwhd.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_XcrePCj-tJeIFti4fER7Lg_AjCGvnVt';
+const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// FUNÇÃO PARA SALVAR (ENVIAR PARA A NUVEM)
+async function salvar() {
+    const t = parseInt(document.getElementById('fTotal').value);
+    const e = parseInt(document.getElementById('fErr').value);
+    const m = document.getElementById('selDisc').value;
+    const s = document.getElementById('selAssunto').value;
+    const cargo = document.getElementById('selCargo').value;
+
+    if(!t || !m || m === "Disciplina") return alert("Preencha os campos corretamente!");
+
+    const acertos = t - e;
+
+    // Inserindo no Supabase
+    const { data, error } = await _supabase
+        .from('estudos')
+        .insert([
+            { 
+                usuario_id: perfil.nome, 
+                cargo: cargo, 
+                materia: m, 
+                topico: s, 
+                total: t, 
+                acertos: acertos 
+            }
+        ]);
+
+    if (error) {
+        console.error("Erro ao salvar:", error.message);
+        alert("Erro ao sincronizar dados!");
+    } else {
+        document.getElementById('fTotal').value = '';
+        document.getElementById('fErr').value = '';
+        alert("Sessão salva na nuvem com sucesso!");
+        render(); // Chama a busca atualizada
+    }
+}
+
+// FUNÇÃO PARA RENDERIZAR (BUSCAR DA NUVEM)
+async function render() {
+    const cargoAtual = document.getElementById('selCargo').value || perfil.cargo;
+    
+    // Buscando dados do Supabase
+    let { data: dadosNuvem, error } = await _supabase
+        .from('estudos')
+        .select('*')
+        .eq('cargo', cargoAtual)
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error("Erro ao buscar dados:", error.message);
+        return;
+    }
+
+    // Atualizando KPIs
+    const tQ = dadosNuvem.reduce((a, b) => a + b.total, 0);
+    const tA = dadosNuvem.reduce((a, b) => a + b.acertos, 0);
+    document.getElementById('kpi-media').innerText = (tQ > 0 ? (tA/tQ*100).toFixed(1) : 0) + "%";
+    document.getElementById('kpi-total').innerText = tQ;
+    document.getElementById('kpi-acertos').innerText = tA;
+
+    // Lógica do Gráfico Radar
+    const mData = {};
+    dadosNuvem.forEach(d => {
+        if(!mData[d.materia]) mData[d.materia] = {a:0, t:0};
+        mData[d.materia].a += d.acertos; mData[d.materia].t += d.total;
+    });
+    
+    const labels = Object.keys(mData);
+    const scores = labels.map(l => (mData[l].a / mData[l].t * 100).toFixed(1));
+
+    if(chartRadar) chartRadar.destroy();
+    chartRadar = new Chart(document.getElementById('radarChart'), {
+        type: 'radar',
+        data: { labels: labels, datasets: [{ label: '% Acertos', data: scores, backgroundColor: 'rgba(79, 70, 229, 0.2)', borderColor: '#4f46e5' }] },
+        options: { scales: { r: { min: 0, max: 100 } } }
+    });
+
+    // Lista de Histórico
+    const list = document.getElementById('rev-list');
+    list.innerHTML = '';
+    dadosNuvem.forEach(s => {
+        const dataFormatada = new Date(s.created_at).toLocaleDateString('pt-BR');
+        list.innerHTML += `<div style="padding:15px; border-bottom:1px solid #eee;"><b>${s.materia}</b>: ${s.acertos}/${s.total} (${dataFormatada})</div>`;
+    });
+}
 
     const editais = {
         "PF": ["Língua Portuguesa", "Informática Básica", "Noções de Direito Administrativo", "Noções de Direito Constitucional", "Direito Penal e Processual Penal", "Noções de Criminalística", "Direitos Humanos", "Raciocínio Lógico", "Fundamentos da Computação", "Bancos de Dados", "Engenharia Reversa de Software", "Linguagens de Programação", "Estruturas de Dados e Algoritmos", "Redes de Computadores", "Segurança da Informação", "Segurança de Redes", "Criptografia", "Sistemas Operacionais (Win/Lin/Mobile)", "Governança de TI e Legislação", "Inteligência Artificial e Forense"],
