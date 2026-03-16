@@ -1,33 +1,27 @@
-# 🛡️ Elite Mentor | Sistema Híbrido de Gestão de Estudos (Perícia & PF)
+# 🛡️ Projeto Mentoria Elite - V4.1
+### Gestão de Performance Estratégica para Carreiras Policiais
 
-![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-blue)
-![Tech](https://img.shields.io/badge/Tech-HTML5%20%7C%20CSS3%20%7C%20JS-yellow)
-![Focus](https://img.shields.io/badge/Focus-Perito%20Criminal%20Federal-red)
+![Status](https://img.shields.io/badge/Status-Online-success)
+![Tech](https://img.shields.io/badge/Tech-JS%20Vanilla%20%7C%20Supabase-blue)
+![Focus](https://img.shields.io/badge/Focus-Perícia%20Criminal%20Federal-red)
 
-## 📋 Sobre o Projeto
-Este é um dashboard interativo desenvolvido para centralizar e monitorar o progresso de estudos focado no cargo de **Perito Criminal Federal - Área 3 (Informática)**. A ferramenta permite o controle de produtividade, análise de desempenho via gráficos e gestão de revisões baseada no edital completo da Polícia Federal.
+O **Projeto Mentoria Elite** é uma aplicação Full Stack desenvolvida para centralizar, monitorar e otimizar o desempenho de candidatos focados na Polícia Federal (Área 3) e Polícia Civil do Pará. O sistema transforma dados brutos de simulados em inteligência estratégica.
 
-### 🚀 Funcionalidades Implementadas
-- **Login Seguro:** Interface de acesso com proteção de credenciais e atalhos de teclado (Enter).
-- **Dashboard de Performance:** Gráficos de Radar (Chart.js) para visualização de competências por disciplina.
-- **Banco de Dados Exaustivo:** Edital completo injetado via JSON, abrangendo desde Língua Portuguesa até Computação Forense e IA Generativa.
-- **Persistência de Dados:** Estrutura preparada para sincronização via LocalStorage e integração com Firebase.
-- **Relatórios PDF:** Geração automática de relatórios de desempenho para acompanhamento de mentoria.
+## 🚀 Diferenciais Técnicos (Stack)
+Para este projeto, optei por uma arquitetura que prioriza a velocidade e a integridade dos dados:
 
-## 💻 Tecnologias Utilizadas
-- **Frontend:** HTML5, CSS3 (Variáveis modernas e Layout Responsivo).
-- **Interatividade:** JavaScript Vanilla (ES6+).
-- **Gráficos:** [Chart.js](https://www.chartjs.org/).
-- **Exportação:** [jsPDF](https://github.com/parallax/jsPDF) e [html2canvas](https://html2canvas.hertzen.com/).
-- **Icons:** Font Awesome 6.
+* **Frontend:** JavaScript Vanilla (ES6+), HTML5 e CSS3 com foco em design responsivo (Mobile-First).
+* **Backend & Database:** [Supabase](https://supabase.com/) (PostgreSQL) para persistência de dados em tempo real e sincronização em múltiplos dispositivos.
+* **Data Viz:** [Chart.js](https://www.chartjs.org/) para a geração de **Radar Charts** de competências, permitindo identificar lacunas no edital de forma visual.
+* **Relatórios:** Integração com `jsPDF` e `html2canvas` para exportação de relatórios de métricas em PDF.
 
-## 📂 Estrutura do Edital (Inserido no Sistema)
-O sistema conta com 20 disciplinas mapeadas, incluindo:
-- **Informática Forense:** Engenharia Reversa, Criptografia, Sistemas de Arquivos (NTFS/EXT4), Redes TOR e Segurança de Redes.
-- **Jurídico:** Cadeia de Custódia (Art. 158-A), Direito Penal, Processual Penal e Criminalística Moderna.
-- **Inteligência Artificial:** Machine Learning, Deepfakes e IA Generativa.
+## 📋 Funcionalidades
+- **Login Hierárquico:** Níveis de acesso para Aluno e Mentor.
+- **Sincronização Cloud:** Registre seus estudos no Desktop e acompanhe a evolução pelo Celular.
+- **Mapeamento de Edital:** Banco de dados integrado com tópicos específicos de Informática Forense, Engenharia Reversa e Criptografia.
+- **KPIs de Performance:** Cálculo automático de taxa de aproveitamento e volume de questões por disciplina.
 
-## 🔧 Como Executar
-1. Clone o repositório:
+## 🛠️ Como executar o projeto
+1. Clone este repositório:
    ```bash
-   git clone [https://github.com/jarlonbatista/mentoria-elite]
+   git clone [https://github.com/jarlonbatista/mentoria-elite.git](https://github.com/jarlonbatista/mentoria-elite.git)
