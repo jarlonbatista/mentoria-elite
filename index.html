@@ -57,14 +57,24 @@
         .btn-logout { background: transparent; color: #94a3b8; border: 1px solid #334155; margin-top: 10px; font-size: 0.8rem; }
         .btn-logout:hover { background: var(--danger); color: white; border-color: var(--danger); }
 
+        .btn-danger-small { background: var(--danger); color: white; padding: 5px 10px; border-radius: 8px; font-size: 0.7rem; cursor: pointer; border: none; }
+
         .admin-only { display: none; }
         .page { animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .grid-disciplinas { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; margin-top: 20px; }
+        .item-disciplina { background: #f8fafc; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #e2e8f0; }
+
+        .ciclo-estudo { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 20px; }
+        .dia-estudo { background: #fff; padding: 10px; border-radius: 12px; text-align: center; border: 1px solid #e2e8f0; font-size: 0.8rem; }
+        .dia-destaque { background: var(--primary); color: white; }
 
         @media (max-width: 1024px) {
             .sidebar { left: -280px; }
             .sidebar.active { left: 0; }
             .main-content { margin-left: 0; padding: 20px; }
+            .ciclo-estudo { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -125,6 +135,19 @@
             <div class="mini-card"><small style="font-weight: 700; color: #94a3b8;">TOTAL ACERTOS</small><h1 id="kpi-acertos" style="color: var(--secondary); font-size: 2.5rem;">0</h1></div>
         </div>
 
+        <div class="card">
+            <h4><i class="fas fa-calendar-alt"></i> Cronograma de Estudos (1h Teoria + 1h Prática)</h4>
+            <div class="ciclo-estudo">
+                <div class="dia-estudo">Seg<br><b>Teoria/Questões</b></div>
+                <div class="dia-estudo">Ter<br><b>Teoria/Questões</b></div>
+                <div class="dia-estudo">Qua<br><b>Teoria/Questões</b></div>
+                <div class="dia-estudo">Qui<br><b>Teoria/Questões</b></div>
+                <div class="dia-estudo">Sex<br><b>Teoria/Questões</b></div>
+                <div class="dia-estudo dia-destaque">Sáb<br><b>REVISÃO</b></div>
+                <div class="dia-estudo dia-destaque">Dom<br><b>SIMULADO</b></div>
+            </div>
+        </div>
+
         <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 25px;">
             <div class="card">
                 <h4 style="margin-bottom: 20px;"><i class="fas fa-plus-circle"></i> Novo Registro de Performance</h4>
@@ -149,6 +172,11 @@
                 <canvas id="radarChart"></canvas>
             </div>
         </div>
+
+        <div class="card">
+            <h4><i class="fas fa-list-check"></i> Desempenho por Disciplina</h4>
+            <div id="grid-disciplinas" class="grid-disciplinas"></div>
+        </div>
     </div>
 
     <div id="rev-p" class="page" style="display:none">
@@ -165,22 +193,24 @@
     const SENHA_ADM = "admin@elite";
     const SENHA_ALUNO = "aluno@elite";
 
-    // CONTEÚDO INTEGRAL DOS EDITAIS
     const editais = {
         "PF": ["Língua Portuguesa", "Informática Básica", "Direito Administrativo", "Direito Constitucional", "Direito Penal e Processual Penal", "Noções de Criminalística", "Direitos Humanos", "Raciocínio Lógico", "Fundamentos da Computação", "Bancos de Dados", "Engenharia Reversa", "Linguagens de Programação", "Redes de Computadores", "Segurança da Informação", "Criptografia", "Sistemas Operacionais", "Inteligência Artificial"],
         "PC-PA": ["Língua Portuguesa", "Raciocínio Lógico", "Noções de Informática", "Conhecimentos do Pará", "Direito Administrativo", "Direito Constitucional", "Direito Penal", "Direito Processual Penal", "Legislação Especial", "Arquivologia"]
     };
 
     const disciplinas = {
-        "Língua Portuguesa": ["Interpretação", "Gramática", "Sintaxe", "Redação Oficial"],
-        "Segurança da Informação": ["ISO 27001", "OWASP", "OSINT", "Esteganografia", "Cloud Security"],
-        "Criptografia": ["Simétrica/Assimétrica", "RSA/AES", "Hashes", "Blockchain"],
-        "Direito Penal e Processual Penal": ["Teoria do Crime", "Inquérito Policial", "Cadeia de Custódia", "Prisões"],
-        "Noções de Criminalística": ["Vestígios", "Teoria de Locard", "Balística", "Locais de Crime"],
-        "Informática Básica": ["Hardware", "Software", "Redes", "Malware"],
-        "Redes de Computadores": ["Modelo OSI/TCP-IP", "Protocolos", "Redes TOR", "DNS/SSH"],
-        "Bancos de Dados": ["SQL", "NoSQL", "Modelagem", "SQLite"],
-        "Inteligência Artificial": ["Machine Learning", "Deep Learning", "Deepfakes", "IA Forense"]
+        "Língua Portuguesa": ["ORTOGRAFIA OFICIAL", "TIPOLOGIA TEXTUAL", "ACENTUAÇÃO GRÁFICA", "EMPREGO DAS CLASSES DE PALAVRAS", "Flexão Nominal.", "PRONOMES: EMPREGO, FORMAS DE TRATAMENTO E COLOCAÇÃO", "Pronomes Pessoais", "Modos Verbais", "Tempos Verbais", "FLEXÃO VERBAL", "Vozes do Verbo", "REGÊNCIA NOMINAL E VERBAL", "CONCORDÂNCIA NOMINAL E VERBAL", "CRASE", "PONTUAÇÃO", "SIGNIFICAÇÃO DAS PALAVRAS", "Homônimos", "Parônimos", "COMPREENSÃO E INTERPRETAÇÃO DE TEXTO"],
+        "Informática Básica": ["Hardware", "Software", "Redes", "Malware", "Windows/Linux", "Office 365", "Segurança Cibernética"],
+        "Direito Administrativo": ["Princípios", "Organização", "Atos Administrativos", "Agentes Públicos", "Poderes", "Licitações"],
+        "Direito Constitucional": ["Direitos Fundamentais", "Nacionalidade", "Poder Judiciário", "Segurança Pública", "Constituição Estadual"],
+        "Segurança da Informação": ["ISO 27001", "OWASP", "OSINT", "Esteganografia", "Cloud Security", "Vulnerabilidades"],
+        "Criptografia": ["Simétrica/Assimétrica", "RSA/AES", "Hashes", "Blockchain", "Assinatura Digital"],
+        "Direito Penal e Processual Penal": ["Teoria do Crime", "Inquérito Policial", "Cadeia de Custódia", "Prisões", "Provas Periciais"],
+        "Noções de Criminalística": ["Vestígios", "Teoria de Locard", "Balística", "Locais de Crime", "Identificação Humana"],
+        "Redes de Computadores": ["Modelo OSI/TCP-IP", "Protocolos HTTP/SSH/FTP", "Redes TOR", "DNS", "Roteamento"],
+        "Bancos de Dados": ["SQL", "NoSQL", "Modelagem ER", "SQLite", "Data Mining", "Big Data"],
+        "Engenharia Reversa": ["Análise Estática/Dinâmica", "Assembler", "Debuggers", "Malware Analysis"],
+        "Inteligência Artificial": ["Machine Learning", "Deep Learning", "Deepfakes", "IA Forense", "Algoritmos Genéticos"]
     };
 
     let chartRadar;
@@ -200,7 +230,6 @@
     }
 
     document.getElementById('pass').addEventListener('keypress', (e) => { if(e.key === 'Enter') checkLogin(); });
-
     function logout() { location.reload(); }
 
     function atualizarCargo() {
@@ -221,18 +250,21 @@
         if(d && disciplinas[d]) disciplinas[d].forEach(a => sa.innerHTML += `<option value="${a}">${a}</option>`);
     }
 
+    async function zerarDisciplina(materia) {
+        if(!confirm(`Deseja realmente ZERAR todos os dados de ${materia}?`)) return;
+        const { error } = await _supabase.from('estudos').delete().eq('materia', materia);
+        if (error) alert("Erro ao zerar!"); else { alert("Disciplina resetada!"); render(); }
+    }
+
     async function salvar() {
         const t = parseInt(document.getElementById('fTotal').value);
         const e = parseInt(document.getElementById('fErr').value) || 0;
         const m = document.getElementById('selDisc').value;
         const c = document.getElementById('selCargo').value;
-
         if(!t || m === "Disciplina" || !c) return alert("Erro: Campos incompletos!");
-
         const { error } = await _supabase.from('estudos').insert([{
             usuario_id: perfil.nome, cargo: c, materia: m, topico: document.getElementById('selAssunto').value, total: t, acertos: t-e
         }]);
-
         if (error) alert("Falha na sincronização!");
         else { 
             alert("Sucesso: Dados computados!"); 
@@ -245,7 +277,6 @@
     async function render() {
         const cargo = document.getElementById('selCargo').value || perfil.cargo;
         if(!cargo) return;
-
         const { data, error } = await _supabase.from('estudos').select('*').eq('cargo', cargo);
         if(error || !data) return;
 
@@ -262,46 +293,46 @@
         });
 
         const labels = Object.keys(mData);
+        const dataValues = labels.map(l => (mData[l].a/mData[l].t*100).toFixed(1));
+        const labelsWithPerc = labels.map((l, i) => `${l}: ${dataValues[i]}%`);
+
         if(chartRadar) chartRadar.destroy();
         chartRadar = new Chart(document.getElementById('radarChart'), {
             type: 'radar',
             data: { 
-                labels: labels, 
+                labels: labelsWithPerc, 
                 datasets: [{ 
                     label: '% Desempenho', 
-                    data: labels.map(l => (mData[l].a/mData[l].t*100).toFixed(1)), 
-                    backgroundColor: 'rgba(79, 70, 229, 0.2)', 
+                    data: dataValues, 
+                    backgroundColor: 'rgba(79, 70, 229, 0.4)', 
                     borderColor: '#4f46e5',
-                    pointBackgroundColor: '#4f46e5'
+                    pointBackgroundColor: '#4f46e5',
+                    pointRadius: 4
                 }] 
             },
-            options: { scales: { r: { min: 0, max: 100, ticks: { display: false } } } }
+            options: { scales: { r: { min: 0, max: 100, ticks: { display: false }, pointLabels: { font: { weight: '700' } } } }, plugins: { legend: { display: false } } }
         });
 
-        const list = document.getElementById('rev-list');
-        list.innerHTML = data.reverse().map(s => `
-            <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-                <div><strong>${s.materia}</strong><br><small>${s.topico} | ${s.total} qts</small></div>
-                <div style="text-align:right"><span style="color:var(--secondary); font-weight:800;">${s.acertos} ACERTOS</span><br><small>${((s.acertos/s.total)*100).toFixed(1)}%</small></div>
+        // Atualiza a Grid Inferior de Disciplinas
+        const grid = document.getElementById('grid-disciplinas');
+        grid.innerHTML = labels.map((l, i) => `
+            <div class="item-disciplina">
+                <div><strong>${l}</strong>: ${dataValues[i]}%</div>
+                <button class="btn-danger-small" onclick="zerarDisciplina('${l}')">ZERAR</button>
             </div>
         `).join('');
+
+        const list = document.getElementById('rev-list');
+        list.innerHTML = data.reverse().map(s => `<div class="card" style="display:flex; justify-content:space-between; align-items:center;"><div><strong>${s.materia}</strong><br><small>${s.topico} | ${s.total} qts</small></div><div style="text-align:right"><span style="color:var(--secondary); font-weight:800;">${s.acertos} ACERTOS</span><br><small>${((s.acertos/s.total)*100).toFixed(1)}%</small></div></div>`).join('');
     }
 
-    function showPage(id) {
-        document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-        document.getElementById(id).style.display = 'block';
-    }
+    function showPage(id) { document.querySelectorAll('.page').forEach(p => p.style.display = 'none'); document.getElementById(id).style.display = 'block'; }
 
     async function gerarPDF() {
         const { jsPDF } = window.jspdf;
-        const element = document.getElementById('capture-area');
-        const canvas = await html2canvas(element);
-        const imgData = canvas.toDataURL('image/png');
+        const canvas = await html2canvas(document.getElementById('capture-area'));
         const pdf = new jsPDF('p', 'mm', 'a4');
-        const imgProps = pdf.getImageProperties(imgData);
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 210, (canvas.height * 210) / canvas.width);
         pdf.save('Performance_Mentoria_Elite.pdf');
     }
 </script>
