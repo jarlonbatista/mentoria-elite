@@ -20,61 +20,50 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #334155; overflow-x: hidden; }
 
-        #login-screen { 
-            position: fixed; inset: 0; background: radial-gradient(circle at top right, #1e293b, #0f172a); 
-            display: flex; align-items: center; justify-content: center; z-index: 9999; 
-        }
-        .login-box { 
-            background: var(--white); padding: 45px; border-radius: 28px; width: 90%; max-width: 400px; 
-            text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); 
-        }
+        #login-screen { position: fixed; inset: 0; background: radial-gradient(circle at top right, #1e293b, #0f172a); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+        .login-box { background: var(--white); padding: 45px; border-radius: 28px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
 
-        .sidebar { 
-            width: 280px; background: var(--sidebar); color: white; height: 100vh; position: fixed; 
-            padding: 30px 20px; display: flex; flex-direction: column; z-index: 3000; transition: 0.3s ease;
-        }
+        .sidebar { width: 280px; background: var(--sidebar); color: white; height: 100vh; position: fixed; padding: 30px 20px; display: flex; flex-direction: column; z-index: 3000; transition: 0.3s ease; }
         .main-content { margin-left: 280px; padding: 40px; transition: 0.3s ease; }
 
-        .card { 
-            background: var(--white); padding: 25px; border-radius: 20px; border: 1px solid #e2e8f0; 
-            margin-bottom: 25px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); 
-        }
+        .card { background: var(--white); padding: 25px; border-radius: 20px; border: 1px solid #e2e8f0; margin-bottom: 25px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .mini-card { 
-            background: var(--white); padding: 25px; border-radius: 20px; text-align: center; 
-            border-bottom: 4px solid var(--primary);
-        }
+        .mini-card { background: var(--white); padding: 25px; border-radius: 20px; text-align: center; border-bottom: 4px solid var(--primary); }
 
-        input, select { 
-            padding: 14px; border: 1.5px solid #e2e8f0; border-radius: 12px; margin-top: 8px; 
-            width: 100%; background: #f8fafc; font-weight: 500;
-        }
-        .btn { 
-            padding: 16px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; 
-            width: 100%; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
-        .btn-primary { background: var(--primary); color: white; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4); }
+        input, select { padding: 14px; border: 1.5px solid #e2e8f0; border-radius: 12px; margin-top: 8px; width: 100%; background: #f8fafc; font-weight: 500; }
+        .btn { padding: 16px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; width: 100%; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-primary { background: var(--primary); color: white; }
         .btn-logout { background: transparent; color: #94a3b8; border: 1px solid #334155; margin-top: 10px; font-size: 0.8rem; }
         .btn-logout:hover { background: var(--danger); color: white; border-color: var(--danger); }
-
         .btn-danger-small { background: var(--danger); color: white; padding: 5px 10px; border-radius: 8px; font-size: 0.7rem; cursor: pointer; border: none; }
 
         .admin-only { display: none; }
         .page { animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* Timer Compacto & Ciclo */
+        .timer-container { display: flex; align-items: center; justify-content: space-around; gap: 20px; padding: 10px; }
+        .timer-display { font-size: 2.2rem; font-weight: 800; color: var(--dark); font-family: monospace; }
+        
+        .ciclo-estudo { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 20px; }
+        .dia-estudo { background: #fff; padding: 10px 5px; border-radius: 12px; text-align: center; border: 1px solid #e2e8f0; font-size: 0.7rem; transition: 0.3s; }
+        .dia-ativo { border: 2px solid var(--primary); background: #4f46e5; color: white !important; transform: scale(1.05); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); font-weight: 800; }
+        .dia-ativo b { color: white !important; }
+
         .grid-disciplinas { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; margin-top: 20px; }
         .item-disciplina { background: #f8fafc; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #e2e8f0; }
 
-        .ciclo-estudo { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 20px; }
-        .dia-estudo { background: #fff; padding: 10px; border-radius: 12px; text-align: center; border: 1px solid #e2e8f0; font-size: 0.8rem; }
-        .dia-destaque { background: var(--primary); color: white; }
+        /* Foto de Perfil */
+        .profile-upload { position: relative; display: inline-block; cursor: pointer; }
+        .profile-upload input { display: none; }
+        .profile-upload:hover::after { content: 'Mudar Foto'; position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.6); color: white; font-size: 10px; padding: 2px; border-radius: 0 0 20px 20px; }
 
         @media (max-width: 1024px) {
             .sidebar { left: -280px; }
             .sidebar.active { left: 0; }
             .main-content { margin-left: 0; padding: 20px; }
-            .ciclo-estudo { grid-template-columns: 1fr; }
+            .ciclo-estudo { grid-template-columns: repeat(4, 1fr); }
+            .timer-container { flex-direction: column; }
         }
     </style>
 </head>
@@ -94,7 +83,10 @@
 
 <aside class="sidebar" id="sidebar">
     <div style="text-align: center; margin-bottom: 40px;">
-        <img id="side-img" src="https://ui-avatars.com/api/?name=Jarlon+Batista&background=4f46e5&color=fff" style="width: 90px; border-radius: 24px; border: 4px solid rgba(255,255,255,0.1);">
+        <label class="profile-upload">
+            <input type="file" id="imgInput" accept="image/*" onchange="uploadFoto()">
+            <img id="side-img" src="https://ui-avatars.com/api/?name=Jarlon+Batista&background=4f46e5&color=fff" style="width: 90px; height: 90px; border-radius: 24px; border: 4px solid rgba(255,255,255,0.1); object-fit: cover;">
+        </label>
         <h3 style="margin-top: 15px; font-weight: 700;">Jarlon Batista</h3>
         <span id="role-badge" style="font-size: 0.65rem; background: var(--primary); padding: 3px 10px; border-radius: 20px; font-weight: 800;">ALUNO</span>
     </div>
@@ -124,33 +116,43 @@
 
 <main class="main-content" id="capture-area">
     <div id="dash-p" class="page">
-        <header style="margin-bottom: 30px;">
-            <h2 style="font-weight: 800; color: var(--dark);">Bem-vindo ao Projeto Mentoria Elite.</h2>
-            <p style="color: #64748b;">Monitore seu desempenho em tempo real. Aqui a missão é evoluir e não regredir!</p>
-        </header>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px;">
+            <div class="card" style="border-left: 6px solid var(--primary); margin-bottom: 15px; padding: 15px;">
+                <h5 style="color: var(--primary);"><i class="fas fa-stopwatch"></i> MISSÃO</h5>
+                <div class="timer-container">
+                    <div id="timer" class="timer-display">60:00</div>
+                    <div style="display: flex; flex-direction: column; gap: 5px;">
+                        <button class="btn-danger-small" style="background: var(--primary);" onclick="startTimer(60)">1H</button>
+                        <button class="btn-danger-small" style="background: var(--accent);" onclick="startTimer(30)">30M</button>
+                        <button class="btn-danger-small" onclick="stopTimer()">STOP</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-bottom: 15px; padding: 15px;">
+                <h5><i class="fas fa-calendar-check"></i> CICLO ATUAL</h5>
+                <div class="ciclo-estudo" id="ciclo-semanal">
+                    <div class="dia-estudo" id="dia-1">SEG<br><b>T/Q</b></div>
+                    <div class="dia-estudo" id="dia-2">TER<br><b>T/Q</b></div>
+                    <div class="dia-estudo" id="dia-3">QUA<br><b>T/Q</b></div>
+                    <div class="dia-estudo" id="dia-4">QUI<br><b>T/Q</b></div>
+                    <div class="dia-estudo" id="dia-5">SEX<br><b>T/Q</b></div>
+                    <div class="dia-estudo" id="dia-6">SÁB<br><b>REV</b></div>
+                    <div class="dia-estudo" id="dia-0">DOM<br><b>SIM</b></div>
+                </div>
+            </div>
+        </div>
 
         <div class="stats-grid">
             <div class="mini-card"><small style="font-weight: 700; color: #94a3b8;">MÉDIA GLOBAL</small><h1 id="kpi-media" style="color: var(--primary); font-size: 2.5rem;">0%</h1></div>
-            <div class="mini-card"><small style="font-weight: 700; color: #94a3b8;">TOTAL QUESTÕES</small><h1 id="kpi-total" style="color: var(--dark); font-size: 2.5rem;">0</h1></div>
-            <div class="mini-card"><small style="font-weight: 700; color: #94a3b8;">TOTAL ACERTOS</small><h1 id="kpi-acertos" style="color: var(--secondary); font-size: 2.5rem;">0</h1></div>
-        </div>
-
-        <div class="card">
-            <h4><i class="fas fa-calendar-alt"></i> Cronograma de Estudos (1h Teoria + 1h Prática)</h4>
-            <div class="ciclo-estudo">
-                <div class="dia-estudo">Seg<br><b>Teoria/Questões</b></div>
-                <div class="dia-estudo">Ter<br><b>Teoria/Questões</b></div>
-                <div class="dia-estudo">Qua<br><b>Teoria/Questões</b></div>
-                <div class="dia-estudo">Qui<br><b>Teoria/Questões</b></div>
-                <div class="dia-estudo">Sex<br><b>Teoria/Questões</b></div>
-                <div class="dia-estudo dia-destaque">Sáb<br><b>REVISÃO</b></div>
-                <div class="dia-estudo dia-destaque">Dom<br><b>SIMULADO</b></div>
-            </div>
+            <div class="mini-card"><small style="font-weight: 700; color: #94a3b8;">QUESTÕES</small><h1 id="kpi-total" style="color: var(--dark); font-size: 2.5rem;">0</h1></div>
+            <div class="mini-card"><small style="font-weight: 700; color: #94a3b8;">ACERTOS</small><h1 id="kpi-acertos" style="color: var(--secondary); font-size: 2.5rem;">0</h1></div>
         </div>
 
         <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 25px;">
             <div class="card">
-                <h4 style="margin-bottom: 20px;"><i class="fas fa-plus-circle"></i> Novo Registro de Performance</h4>
+                <h4 style="margin-bottom: 20px;"><i class="fas fa-plus-circle"></i> Sincronizar Performance</h4>
                 <select id="selCargo" onchange="atualizarCargo()">
                     <option value="">Selecione o Edital...</option>
                     <option value="PF">PF - Perito Criminal (Informática)</option>
@@ -164,11 +166,11 @@
                     <input type="number" id="fTotal" placeholder="Questões Feitas">
                     <input type="number" id="fErr" placeholder="Total Erros">
                 </div>
-                <button class="btn btn-primary" onclick="salvar()">SINCRONIZAR DADOS</button>
+                <button class="btn btn-primary" onclick="salvar()">GRAVAR NA NUVEM</button>
             </div>
 
             <div class="card" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                <h4 style="margin-bottom: 20px;">Radar de Competências</h4>
+                <h4 style="margin-bottom: 20px;">Radar de Evolução</h4>
                 <canvas id="radarChart"></canvas>
             </div>
         </div>
@@ -180,7 +182,7 @@
     </div>
 
     <div id="rev-p" class="page" style="display:none">
-        <h2 style="margin-bottom: 25px;">Análise Histórica</h2>
+        <h2 style="margin-bottom: 25px;">Histórico Geral</h2>
         <div id="rev-list"></div>
     </div>
 </main>
@@ -200,37 +202,138 @@
 
     const disciplinas = {
         "Língua Portuguesa": ["ORTOGRAFIA OFICIAL", "TIPOLOGIA TEXTUAL", "ACENTUAÇÃO GRÁFICA", "EMPREGO DAS CLASSES DE PALAVRAS", "Flexão Nominal.", "PRONOMES: EMPREGO, FORMAS DE TRATAMENTO E COLOCAÇÃO", "Pronomes Pessoais", "Modos Verbais", "Tempos Verbais", "FLEXÃO VERBAL", "Vozes do Verbo", "REGÊNCIA NOMINAL E VERBAL", "CONCORDÂNCIA NOMINAL E VERBAL", "CRASE", "PONTUAÇÃO", "SIGNIFICAÇÃO DAS PALAVRAS", "Homônimos", "Parônimos", "COMPREENSÃO E INTERPRETAÇÃO DE TEXTO"],
-        "Informática Básica": ["Hardware", "Software", "Redes", "Malware", "Windows/Linux", "Office 365", "Segurança Cibernética"],
-        "Direito Administrativo": ["Princípios", "Organização", "Atos Administrativos", "Agentes Públicos", "Poderes", "Licitações"],
-        "Direito Constitucional": ["Direitos Fundamentais", "Nacionalidade", "Poder Judiciário", "Segurança Pública", "Constituição Estadual"],
-        "Segurança da Informação": ["ISO 27001", "OWASP", "OSINT", "Esteganografia", "Cloud Security", "Vulnerabilidades"],
-        "Criptografia": ["Simétrica/Assimétrica", "RSA/AES", "Hashes", "Blockchain", "Assinatura Digital"],
-        "Direito Penal e Processual Penal": ["Teoria do Crime", "Inquérito Policial", "Cadeia de Custódia", "Prisões", "Provas Periciais"],
-        "Noções de Criminalística": ["Vestígios", "Teoria de Locard", "Balística", "Locais de Crime", "Identificação Humana"],
-        "Redes de Computadores": ["Modelo OSI/TCP-IP", "Protocolos HTTP/SSH/FTP", "Redes TOR", "DNS", "Roteamento"],
-        "Bancos de Dados": ["SQL", "NoSQL", "Modelagem ER", "SQLite", "Data Mining", "Big Data"],
-        "Engenharia Reversa": ["Análise Estática/Dinâmica", "Assembler", "Debuggers", "Malware Analysis"],
-        "Inteligência Artificial": ["Machine Learning", "Deep Learning", "Deepfakes", "IA Forense", "Algoritmos Genéticos"]
+        "Informática Básica": ["Hardware", "Software", "Redes", "Malware", "Windows/Linux", "Office 365", "Segurança Cibernética", "Cloud Computing"],
+        "Direito Administrativo": ["Estado e Governo", "Agentes Públicos", "Poderes Administrativos", "Atos Administrativos", "Licitações e Contratos", "Controle da Administração"],
+        "Direito Constitucional": ["Direitos Fundamentais", "Poder Judiciário", "Segurança Pública", "Constituição Federal", "Controle de Constitucionalidade", "Poder Legislativo"],
+        "Segurança da Informação": ["ISO 27001", "OWASP", "OSINT", "Esteganografia", "Cloud Security", "Vulnerabilidades", "Firewalls", "IDS/IPS"],
+        "Criptografia": ["Simétrica/Assimétrica", "RSA/AES", "Hashes", "Blockchain", "Assinatura Digital", "Certificados Digitais"],
+        "Direito Penal e Processual Penal": ["Teoria do Crime", "Inquérito Policial", "Cadeia de Custódia", "Prisões", "Provas Periciais", "Lei Maria da Penha"],
+        "Noções de Criminalística": ["Vestígios", "Teoria de Locard", "Balística", "Locais de Crime", "Identificação Humana", "Papiloscopia"],
+        "Redes de Computadores": ["Modelo OSI/TCP-IP", "Protocolos HTTP/SSH/FTP", "Redes TOR", "DNS", "Roteamento", "IPv4/IPv6"],
+        "Bancos de Dados": ["SQL", "NoSQL", "Modelagem ER", "SQLite", "Data Mining", "Big Data", "BI"],
+        "Engenharia Reversa": ["Análise Estática/Dinâmica", "Assembler", "Debuggers", "Malware Analysis", "Disassemblers"],
+        "Inteligência Artificial": ["Machine Learning", "Deep Learning", "Deepfakes", "IA Forense", "Algoritmos Genéticos", "Redes Neurais"]
     };
 
-    let chartRadar;
-    let perfil = { nome: "Jarlon Batista", cargo: "" };
+    let timerInterval;
+    const beep = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
+
+    // CRONÔMETRO PERSISTENTE (TIMESTAMP)
+    function startTimer(minutes) {
+        const endTime = Date.now() + minutes * 60 * 1000;
+        localStorage.setItem('elite_timer_end', endTime);
+        runTimerLogic();
+    }
+
+    function runTimerLogic() {
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            const endTime = localStorage.getItem('elite_timer_end');
+            if (!endTime) return clearInterval(timerInterval);
+            const now = Date.now();
+            const diff = Math.ceil((endTime - now) / 1000);
+            if (diff <= 0) {
+                clearInterval(timerInterval);
+                localStorage.removeItem('elite_timer_end');
+                document.getElementById('timer').innerText = "00:00";
+                beep.play();
+                alert("Missão Cumprida!");
+            } else {
+                const mins = Math.floor(diff / 60);
+                const secs = diff % 60;
+                document.getElementById('timer').innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+        }, 1000);
+    }
+
+    function stopTimer() { 
+        clearInterval(timerInterval); 
+        localStorage.removeItem('elite_timer_end');
+        document.getElementById('timer').innerText = "60:00"; 
+    }
+
+    // LÓGICA DE SORTEIO E PENDÊNCIAS
+    async function gerenciarCronograma() {
+        const cargo = localStorage.getItem('elite_cargo');
+        if(!cargo) return;
+        const diaSemana = new Date().getDay();
+        const hojeStr = new Date().toISOString().split('T')[0];
+        let agenda = JSON.parse(localStorage.getItem('elite_agenda') || '{}');
+        
+        if (!agenda[hojeStr]) {
+            const disc = editais[cargo][Math.floor(Math.random() * editais[cargo].length)];
+            const assLista = disciplinas[disc] || ["Geral"];
+            const ass = assLista[Math.floor(Math.random() * assLista.length)];
+            agenda[hojeStr] = { disc: disc, assunto: ass, concluido: false };
+            localStorage.setItem('elite_agenda', JSON.stringify(agenda));
+        }
+        renderAgendaUI(agenda);
+    }
+
+    function renderAgendaUI(agenda) {
+        const hojeStr = new Date().toISOString().split('T')[0];
+        const pendencias = [];
+        Object.keys(agenda).forEach(data => {
+            if (data < hojeStr && !agenda[data].concluido) {
+                pendencias.push(`<div style="color:var(--danger); font-size:0.6rem; margin-top:2px;">⚠️ ATRASADO: ${agenda[data].assunto}</div>`);
+            }
+        });
+        const hoje = agenda[hojeStr];
+        const diaSemana = new Date().getDay();
+        const diaElement = document.getElementById(`dia-${diaSemana}`);
+        if(diaElement) {
+            diaElement.innerHTML = `${diaElement.innerText.split('\n')[0]}<br><b style="font-size:0.6rem; color:${hoje.concluido?'var(--secondary)':'inherit'}">${hoje.concluido?'CONCLUÍDO':hoje.assunto}</b>${pendencias.join('')}`;
+        }
+    }
+
+    function updateCalendar() {
+        const diaSemana = new Date().getDay();
+        document.querySelectorAll('.dia-estudo').forEach(el => el.classList.remove('dia-ativo'));
+        const diaAtual = document.getElementById(`dia-${diaSemana}`);
+        if(diaAtual) diaAtual.classList.add('dia-ativo');
+    }
+
+    function uploadFoto() {
+        const file = document.getElementById('imgInput').files[0];
+        const reader = new FileReader();
+        reader.onloadend = function() {
+            document.getElementById('side-img').src = reader.result;
+            localStorage.setItem('elite_foto', reader.result);
+        }
+        if (file) reader.readAsDataURL(file);
+    }
+
+    window.onload = function() {
+        updateCalendar();
+        runTimerLogic();
+        if(localStorage.getItem('elite_foto')) document.getElementById('side-img').src = localStorage.getItem('elite_foto');
+        if(localStorage.getItem('elite_logado') === 'true') {
+            document.getElementById('login-screen').style.display = 'none';
+            if(localStorage.getItem('elite_role') === 'ADM') {
+                document.querySelectorAll('.admin-only').forEach(e => e.style.display = 'block');
+                document.getElementById('role-badge').innerText = "ADM / MENTOR";
+            }
+            render();
+            gerenciarCronograma();
+        }
+    };
 
     function checkLogin() {
         const p = document.getElementById('pass').value;
         if(p === SENHA_ADM || p === SENHA_ALUNO) {
             document.getElementById('login-screen').style.display = 'none';
+            localStorage.setItem('elite_logado', 'true');
             if(p === SENHA_ADM) {
                 document.querySelectorAll('.admin-only').forEach(e => e.style.display = 'block');
                 document.getElementById('role-badge').innerText = "ADM / MENTOR";
-                document.getElementById('role-badge').style.background = "#f59e0b";
-            }
+                localStorage.setItem('elite_role', 'ADM');
+            } else { localStorage.setItem('elite_role', 'ALUNO'); }
             render();
+            gerenciarCronograma();
         } else { alert("Chave inválida!"); }
     }
 
-    document.getElementById('pass').addEventListener('keypress', (e) => { if(e.key === 'Enter') checkLogin(); });
-    function logout() { location.reload(); }
+    function logout() { localStorage.clear(); location.reload(); }
 
     function atualizarCargo() {
         const c = document.getElementById('selCargo').value;
@@ -238,8 +341,9 @@
         sd.innerHTML = '<option>Disciplina</option>';
         if(c && editais[c]) {
             editais[c].forEach(d => sd.innerHTML += `<option value="${d}">${d}</option>`);
-            perfil.cargo = c;
+            localStorage.setItem('elite_cargo', c);
             render();
+            gerenciarCronograma();
         }
     }
 
@@ -251,9 +355,9 @@
     }
 
     async function zerarDisciplina(materia) {
-        if(!confirm(`Deseja realmente ZERAR todos os dados de ${materia}?`)) return;
+        if(!confirm(`Zerar ${materia}?`)) return;
         const { error } = await _supabase.from('estudos').delete().eq('materia', materia);
-        if (error) alert("Erro ao zerar!"); else { alert("Disciplina resetada!"); render(); }
+        if (!error) render();
     }
 
     async function salvar() {
@@ -261,21 +365,24 @@
         const e = parseInt(document.getElementById('fErr').value) || 0;
         const m = document.getElementById('selDisc').value;
         const c = document.getElementById('selCargo').value;
-        if(!t || m === "Disciplina" || !c) return alert("Erro: Campos incompletos!");
-        const { error } = await _supabase.from('estudos').insert([{
-            usuario_id: perfil.nome, cargo: c, materia: m, topico: document.getElementById('selAssunto').value, total: t, acertos: t-e
-        }]);
-        if (error) alert("Falha na sincronização!");
-        else { 
-            alert("Sucesso: Dados computados!"); 
-            document.getElementById('fTotal').value = '';
-            document.getElementById('fErr').value = '';
-            render(); 
+        const ass = document.getElementById('selAssunto').value;
+        if(!t || m === "Disciplina" || !c) return alert("Campos incompletos!");
+        
+        const { error } = await _supabase.from('estudos').insert([{ usuario_id: 'Jarlon', cargo: c, materia: m, topico: ass, total: t, acertos: t-e }]);
+        
+        if(!error) {
+            let agenda = JSON.parse(localStorage.getItem('elite_agenda') || '{}');
+            Object.keys(agenda).forEach(data => { if(agenda[data].assunto === ass) agenda[data].concluido = true; });
+            localStorage.setItem('elite_agenda', JSON.stringify(agenda));
+            document.getElementById('fTotal').value = ''; document.getElementById('fErr').value = ''; 
+            await render();
+            gerenciarCronograma();
         }
     }
 
+    let chartRadar;
     async function render() {
-        const cargo = document.getElementById('selCargo').value || perfil.cargo;
+        const cargo = document.getElementById('selCargo').value || localStorage.getItem('elite_cargo');
         if(!cargo) return;
         const { data, error } = await _supabase.from('estudos').select('*').eq('cargo', cargo);
         if(error || !data) return;
@@ -293,37 +400,31 @@
         });
 
         const labels = Object.keys(mData);
-        const dataValues = labels.map(l => (mData[l].a/mData[l].t*100).toFixed(1));
-        const labelsWithPerc = labels.map((l, i) => `${l}: ${dataValues[i]}%`);
+        const values = labels.map(l => (mData[l].a/mData[l].t*100).toFixed(1));
 
         if(chartRadar) chartRadar.destroy();
         chartRadar = new Chart(document.getElementById('radarChart'), {
             type: 'radar',
             data: { 
-                labels: labelsWithPerc, 
-                datasets: [{ 
-                    label: '% Desempenho', 
-                    data: dataValues, 
-                    backgroundColor: 'rgba(79, 70, 229, 0.4)', 
-                    borderColor: '#4f46e5',
-                    pointBackgroundColor: '#4f46e5',
-                    pointRadius: 4
-                }] 
+                labels: labels.map((l, i) => `${l}: ${values[i]}%`), 
+                datasets: [{ data: values, backgroundColor: 'rgba(79, 70, 229, 0.4)', borderColor: '#4f46e5', pointRadius: 4 }] 
             },
-            options: { scales: { r: { min: 0, max: 100, ticks: { display: false }, pointLabels: { font: { weight: '700' } } } }, plugins: { legend: { display: false } } }
+            options: { scales: { r: { min: 0, max: 100, ticks: { display: false } } }, plugins: { legend: { display: false } } }
         });
 
-        // Atualiza a Grid Inferior de Disciplinas
-        const grid = document.getElementById('grid-disciplinas');
-        grid.innerHTML = labels.map((l, i) => `
+        document.getElementById('grid-disciplinas').innerHTML = labels.map((l, i) => `
             <div class="item-disciplina">
-                <div><strong>${l}</strong>: ${dataValues[i]}%</div>
+                <div><strong>${l}</strong>: ${values[i]}%</div>
                 <button class="btn-danger-small" onclick="zerarDisciplina('${l}')">ZERAR</button>
             </div>
         `).join('');
 
-        const list = document.getElementById('rev-list');
-        list.innerHTML = data.reverse().map(s => `<div class="card" style="display:flex; justify-content:space-between; align-items:center;"><div><strong>${s.materia}</strong><br><small>${s.topico} | ${s.total} qts</small></div><div style="text-align:right"><span style="color:var(--secondary); font-weight:800;">${s.acertos} ACERTOS</span><br><small>${((s.acertos/s.total)*100).toFixed(1)}%</small></div></div>`).join('');
+        document.getElementById('rev-list').innerHTML = [...data].reverse().map(s => `
+            <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                <div><strong>${s.materia}</strong><br><small>${s.topico} | ${s.total} qts</small></div>
+                <div style="text-align:right"><strong>${s.acertos} ACERTOS</strong><br><small>${((s.acertos/s.total)*100).toFixed(1)}%</small></div>
+            </div>
+        `).join('');
     }
 
     function showPage(id) { document.querySelectorAll('.page').forEach(p => p.style.display = 'none'); document.getElementById(id).style.display = 'block'; }
@@ -333,7 +434,7 @@
         const canvas = await html2canvas(document.getElementById('capture-area'));
         const pdf = new jsPDF('p', 'mm', 'a4');
         pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 210, (canvas.height * 210) / canvas.width);
-        pdf.save('Performance_Mentoria_Elite.pdf');
+        pdf.save('Performance_Elite.pdf');
     }
 </script>
 </body>
